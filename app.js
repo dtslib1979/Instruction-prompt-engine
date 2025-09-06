@@ -1,176 +1,130 @@
 document.addEventListener('DOMContentLoaded', ()=>{
   // version
-  const v = document.getElementById('appVersion'); if (v) v.textContent = 'v15';
+  const v=document.getElementById('appVersion'); if(v) v.textContent='v16';
 
-  // PWA installation
-  let deferredPrompt = null;
-  window.addEventListener('beforeinstallprompt', (e)=>{
-    e.preventDefault(); deferredPrompt = e;
-  });
-  document.getElementById('btnInstall')?.addEventListener('click', async ()=>{
-    if(!deferredPrompt) return; deferredPrompt.prompt(); deferredPrompt = null;
-  });
-
-  // categories (folders)
-  const CATS = [
-    { id:'gpt',     name:'ChatGPT · GPT roots', path:'prompts/gpt' },
-    { id:'project', name:'Projects · Studio',   path:'prompts/project' },
-    { id:'dialogs', name:'Chat windows · Logs', path:'prompts/dialogs' },
-    { id:'copilot', name:'GitHub Copilot',      path:'prompts/copilot' },
+  // categories
+  const CATS=[
+    {id:'gpt',name:'ChatGPT · GPT roots',path:'prompts/gpt'},
+    {id:'project',name:'Projects · Studio',path:'prompts/project'},
+    {id:'dialogs',name:'Chat windows · Logs',path:'prompts/dialogs'},
+    {id:'copilot',name:'GitHub Copilot',path:'prompts/copilot'},
   ];
 
-  const $acc = document.getElementById('catAccordion');
-  const $grid = document.getElementById('promptGrid');
+  const $acc=document.getElementById('catAccordion');
+  const $favList=document.getElementById('favList');
 
+  // ---------- data ----------
   async function loadList(path){
-    try{
-      const res = await fetch(`${path}/index.json?ts=${Date.now()}`);
-      if(!res.ok) return [];
-      return await res.json(); // ["file1.md", ...]
-    }catch{ return []; }
+    try{const r=await fetch(`${path}/index.json?ts=${Date.now()}`);return r.ok?await r.json():[]}catch{return[]}
+  }
+  async function loadMD(url){ const r=await fetch(url); return await r.text(); }
+
+  // ---------- favorites (localStorage) ----------
+  const FKEY='ipwa:favorites';
+  const getFav=()=>{try{return JSON.parse(localStorage.getItem(FKEY)||'[]')}catch{ return [] }};
+  const setFav=(arr)=>localStorage.setItem(FKEY,JSON.stringify(arr.slice(0,10)));
+  const isFav=(p)=>getFav().some(x=>x.path===p);
+  function toggleFav(item){
+    const list=getFav();
+    const idx=list.findIndex(x=>x.path===item.path);
+    if(idx>=0) list.splice(idx,1); else list.unshift(item);
+    setFav(list); renderFav();
+  }
+  function renderFav(){
+    const list=getFav(); $favList.innerHTML='';
+    list.forEach(x=>{
+      const li=document.createElement('li'); li.className='fav-item';
+      li.innerHTML=`<div class="fav-title">${x.title}</div>
+        <button class="fav-remove" data-path="${x.path}">Remove</button>`;
+      $favList.appendChild(li);
+    });
+  }
+  $favList.addEventListener('click',e=>{
+    const btn=e.target.closest('.fav-remove'); if(!btn) return;
+    toggleFav({path:btn.dataset.path,title:''});
+  });
+
+  // ---------- toast ----------
+  function toast(msg){
+    const t=document.createElement('div'); t.className='toast'; t.textContent=msg;
+    document.body.appendChild(t); setTimeout(()=>t.remove(),1800);
+    if(navigator.vibrate) navigator.vibrate(12);
   }
 
-  // Build accordion & initial grid
+  // ---------- accordion build ----------
   (async ()=>{
-    for (const c of CATS){
-      const list = await loadList(c.path);
-      const item = document.createElement('div');
-      item.className = 'acc-item';
-      item.innerHTML = `
+    for(const c of CATS){
+      const list=await loadList(c.path);
+      const preview=list.slice(0,3).map(f=>f.replace(/\.md$/,'').replace(/[-_]/g,' ')).join(', ');
+      const item=document.createElement('div'); item.className='acc-item';
+      item.innerHTML=`
         <button class="acc-btn" data-id="${c.id}">
-          <span>${c.name}</span>
-          <span class="badge">${list.length}</span>
+          <span class="acc-meta"><span>${c.name}</span><span class="badge">${list.length}</span></span>
+          <span class="chev">▾</span>
         </button>
-        <div class="acc-panel" id="panel-${c.id}">
-          <div class="grid" id="grid-${c.id}"></div>
-        </div>`;
+        <div class="preview">${preview || 'No items yet'}</div>
+        <div class="acc-panel" id="panel-${c.id}"><div class="grid" id="grid-${c.id}"></div></div>`;
       $acc.appendChild(item);
 
-      // render cards inside panel
-      const panelGrid = item.querySelector(`#grid-${c.id}`);
-      list.forEach(file=>{
-        const title = file.replace(/\.md$/,'').replace(/[-_]/g,' ');
-        const el = document.createElement('div'); el.className='card';
-        el.innerHTML = `
+      // render cards
+      const grid=item.querySelector(`#grid-${c.id}`);
+      for(const file of list){
+        const title=file.replace(/\.md$/,'').replace(/[-_]/g,' ');
+        const path=`${c.path}/${file}`;
+        const el=document.createElement('div'); el.className='card';
+        el.innerHTML=`
           <div class="title">${title}</div>
-          <button class="copy" data-path="${c.path}/${file}">Copy</button>`;
-        panelGrid.appendChild(el);
-      });
+          <div class="actions">
+            <button class="pin ${isFav(path)?'active':''}" data-title="${title}" data-path="${path}">★</button>
+            <button class="copy" data-path="${path}">Copy</button>
+          </div>`;
+        grid.appendChild(el);
+      }
     }
-    // open first by default
-    const first = document.querySelector('.acc-item'); if(first) first.classList.add('open');
+    const first=document.querySelector('.acc-item'); if(first) first.classList.add('open');
+    renderFav();
   })();
 
   // accordion toggle
-  $acc.addEventListener('click', e=>{
-    const btn = e.target.closest('.acc-btn'); if(!btn) return;
-    const it = btn.parentElement;
-    const wasOpen = it.classList.contains('open');
+  $acc.addEventListener('click',e=>{
+    const btn=e.target.closest('.acc-btn'); if(!btn) return;
+    const it=btn.parentElement, open=it.classList.contains('open');
     document.querySelectorAll('.acc-item').forEach(x=>x.classList.remove('open'));
-    if(!wasOpen) it.classList.add('open');
+    if(!open) it.classList.add('open'); it.scrollIntoView({behavior:'smooth',block:'start'});
   });
 
-  // copy handler (delegation)
-  document.addEventListener('click', async e=>{
-    const b = e.target.closest('.copy'); if(!b) return;
-    try{
-      const res = await fetch(b.dataset.path);
-      const txt = await res.text();
-      await navigator.clipboard.writeText(txt);
-      b.textContent = 'Copied'; setTimeout(()=>b.textContent='Copy',1100);
-    }catch{
-      b.textContent = 'Failed'; setTimeout(()=>b.textContent='Copy',1100);
+  // copy & pin handlers
+  document.addEventListener('click',async e=>{
+    const copyBtn=e.target.closest('.copy');
+    if(copyBtn){
+      try{const txt=await loadMD(copyBtn.dataset.path);
+        await navigator.clipboard.writeText(txt);
+        toast('Copied');
+      }catch{ toast('Copy failed'); }
+      return;
+    }
+    const pinBtn=e.target.closest('.pin');
+    if(pinBtn){
+      toggleFav({path:pinBtn.dataset.path,title:pinBtn.dataset.title});
+      pinBtn.classList.toggle('active');
     }
   });
 
-  // ------- Favorites -------
-  async function renderFavorites(){
-    const ul = document.getElementById('favList');
-    if (!ul) return;
-    try{
-      const res = await fetch('config/favorites.json?ts='+Date.now(),{cache:'no-store'});
-      const json = await res.json();
-      const favs = (json && Array.isArray(json.favorites)) ? json.favorites.slice(0,10) : [];
-      if (favs.length===0){ ul.innerHTML = `<li class="hint">No favorites yet.</li>`; return; }
-      ul.innerHTML = favs.map(f=>`
-        <li class="fav-item">
-          <span class="prompt-title" title="${f.title}">${f.title}</span>
-          <button class="copy" data-path="${f.path}">Copy</button>
-        </li>
-      `).join('');
-    }catch{
-      ul.innerHTML = `<li class="hint">Failed to load favorites.json</li>`;
-    }
-  }
-
-  // ------- Sync button -------
-  document.getElementById('btnSyncAll')?.addEventListener('click', async ()=>{
-    const btn = document.getElementById('btnSyncAll');
-    btn.disabled = true; btn.textContent = 'Syncing…';
-    
-    // Rebuild accordion
-    document.getElementById('catAccordion').innerHTML = '';
-    await buildAccordion();
-    await renderFavorites();
-    
-    btn.disabled = false; btn.textContent = 'Sync';
-    toast('Sync complete');
-  });
-
-  async function buildAccordion(){
-    const root = document.getElementById('catAccordion'); if(!root) return;
-    for(const c of CATS){
-      const list = await loadList(c.path);
-      const item = document.createElement('div');
-      item.className='acc-item';
-      item.innerHTML = `
-        <button class="acc-btn" data-id="${c.id}">
-          <span>${c.name}</span><span class="badge">${list.length}</span>
-        </button>
-        <div class="acc-panel" id="panel-${c.id}">
-          <div class="grid" id="grid-${c.id}"></div>
-        </div>`;
-      root.appendChild(item);
-
-      // render cards
-      const grid = item.querySelector(`#grid-${c.id}`);
-      list.forEach(file=>{
-        const title = file.replace(/\.md$/,'').replace(/[-_]/g,' ');
-        const el = document.createElement('div'); el.className='card';
-        el.innerHTML = `<div class="title">${title}</div>
-                        <button class="copy" data-path="${c.path}/${file}">Copy</button>`;
-        grid.appendChild(el);
-      });
-    }
-
-    // accordion toggle
-    root.addEventListener('click',e=>{
-      const btn = e.target.closest('.acc-btn'); if(!btn) return;
-      const it = btn.parentElement;
-      const opened = it.classList.contains('open');
-      document.querySelectorAll('.acc-item').forEach(x=>x.classList.remove('open'));
-      if(!opened) it.classList.add('open');
+  // ---------- SW update banner ----------
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.addEventListener('message',e=>{
+      if(e.data && e.data.type==='NEW_VERSION'){
+        const m=document.getElementById('updateMount');
+        m.innerHTML=`<div class="update-banner">
+            New version available. <button class="u-btn" id="btnReload">Refresh</button>
+          </div>`;
+        document.getElementById('btnReload').onclick=()=>location.reload();
+      }
     });
   }
 
-  function toast(msg){
-    const t = document.createElement('div');
-    t.textContent = msg;
-    Object.assign(t.style,{
-      position:'fixed',left:'50%',bottom:'18px',transform:'translateX(-50%)',
-      background:'var(--ok)',color:'#fff',padding:'8px 12px',borderRadius:'12px',zIndex:1000
-    });
-    document.body.appendChild(t);
-    setTimeout(()=>t.remove(),1300);
-  }
-
-  // SW registration
-  if ('serviceWorker' in navigator) { 
-    try { 
-      navigator.serviceWorker.register('sw.js'); 
-    } catch(e) {} 
-  }
-
-  // Initialize
-  renderFavorites();
+  // optional install UI
+  window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); const p=e;
+    document.getElementById('btnInstall')?.addEventListener('click', ()=>p.prompt(), {once:true});
+  });
 });
