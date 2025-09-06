@@ -1,0 +1,12 @@
+{
+  "name": "Instruction Prompt PWA",
+  "short_name": "IP-PWA",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4e5c9",
+  "theme_color": "#cd853f",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
