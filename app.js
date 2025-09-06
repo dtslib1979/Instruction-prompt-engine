@@ -15,19 +15,79 @@ $('#btnInstall')?.addEventListener('click', async ()=>{
 
 // 카테고리
 const CATEGORIES = [
-  { key:'chatgpt-gpt',     name:'1. ChatGPT GPT' },
-  { key:'chatgpt-project', name:'2. ChatGPT 프로젝트' },
-  { key:'chatgpt-thread',  name:'3. ChatGPT 개별창' },
-  { key:'github-copilot',  name:'4. GitHub Copilot 지침' },
+  { key:'gpt',      name:'1. ChatGPT GPT',      path:'prompts/gpt' },
+  { key:'project',  name:'2. 프로젝트',         path:'prompts/project' },
+  { key:'dialogs',  name:'3. 개별창',           path:'prompts/dialogs' },
+  { key:'copilot',  name:'4. Copilot',         path:'prompts/copilot' },
 ];
 
 document.addEventListener('DOMContentLoaded', async ()=>{
+  const v = document.getElementById('appVersion'); 
+  if(v) v.textContent = 'v13';
+
+  // 카테고리 구조 정의
+  const cats = [
+    { id:'gpt',    name:'ChatGPT GPT', path:'prompts/gpt' },
+    { id:'proj',   name:'프로젝트',      path:'prompts/project' },
+    { id:'dialogs',name:'개별창',        path:'prompts/dialogs' },
+    { id:'copilot',name:'Copilot',      path:'prompts/copilot' },
+  ];
+
+  // ────────── 업로드 카운트 가져오기 ──────────
+  async function getFileCount(path){
+    try{
+      const res = await fetch(`${path}/index.json?ts=${Date.now()}`);
+      if(!res.ok) return 0;
+      const list = await res.json();
+      return list.length;
+    }catch(e){ return 0; }
+  }
+
+  async function initTree(){
+    const svg = document.getElementById('tree');
+    if(!svg) return;
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d','M10,210 C80,40 220,40 290,210');
+    path.setAttribute('fill','none'); 
+    path.setAttribute('stroke','#d9c8a7'); 
+    path.setAttribute('stroke-width','3');
+    svg.appendChild(path);
+
+    const wrap = svg.parentElement;
+    const L = path.getTotalLength();
+    const pos = t => path.getPointAtLength(L*t);
+
+    let i=0;
+    for(const c of cats){
+      const t = 0.15 + i*0.23; 
+      const p = pos(t);
+      const count = await getFileCount(c.path);
+
+      const b = document.createElement('button');
+      b.className='node';
+      b.style.left=`${p.x-80}px`; 
+      b.style.top=`${p.y-18}px`;
+      b.innerHTML = `
+        <span class="dot"></span>
+        <span>${i+1}. ${c.name}</span>
+        <span class="badge">${count}</span>
+      `;
+      b.addEventListener('click', ()=>scrollToPrompts(c.id));
+      wrap.appendChild(b);
+
+      i++;
+    }
+  }
+
+  function scrollToPrompts(catId){ 
+    document.getElementById('promptList')?.scrollIntoView({behavior:'smooth'}); 
+    // 추가: 해당 catId 목록만 보여주도록 필터링 로직 연결 가능
+  }
+
+  initTree();
+
   // v12: SW 등록
   if ('serviceWorker' in navigator) { try { await navigator.serviceWorker.register('sw.js'); } catch {} }
-
-  // 버전 표기
-  const v=document.getElementById('appVersion');
-  if(v) v.textContent='v12';
 
   // v12: 드로어 제스처
   const scrim=document.getElementById('scrim');
@@ -98,11 +158,13 @@ function renderCategoryListSkeleton(){
 // GitHub URL helpers
 function ghUploadUrl(catKey){
   const { repoOwner, repoName, branch } = SETTINGS;
-  return `https://github.com/${repoOwner}/${repoName}/upload/${encodeURIComponent(branch)}/library/${catKey}`;
+  const cat = CATEGORIES.find(c => c.key === catKey);
+  return `https://github.com/${repoOwner}/${repoName}/upload/${encodeURIComponent(branch)}/${cat.path}`;
 }
 function ghContentsUrl(catKey){
   const { repoOwner, repoName, branch } = SETTINGS;
-  return `https://api.github.com/repos/${repoOwner}/${repoName}/contents/library/${catKey}?ref=${encodeURIComponent(branch)}`;
+  const cat = CATEGORIES.find(c => c.key === catKey);
+  return `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${cat.path}?ref=${encodeURIComponent(branch)}`;
 }
 function ghRawUrl(path){
   const { repoOwner, repoName, branch } = SETTINGS;
@@ -112,22 +174,24 @@ function ghRawUrl(path){
 // Counts
 async function refreshAllCounts(){
   await Promise.all(CATEGORIES.map(async cat=>{
-    const files = await listMdFiles(cat.key);
-    const n = files.length;
+    const count = await getFileCount(cat.path);
     const badge = document.querySelector(`[data-badge="${cat.key}"]`);
-    if (badge) badge.textContent = String(n);
+    if (badge) badge.textContent = String(count);
   }));
 }
 
-// List .md
+// List .md files using index.json
 async function listMdFiles(catKey){
   try{
-    const res = await fetch(ghContentsUrl(catKey),{cache:'no-store'});
+    const cat = CATEGORIES.find(c => c.key === catKey);
+    if (!cat) return [];
+    
+    const res = await fetch(`${cat.path}/index.json?ts=${Date.now()}`);
     if(!res.ok) return [];
-    const json = await res.json();
-    return (Array.isArray(json)?json:[])
-      .filter(it=>it.type==='file' && /\.md$/i.test(it.name))
-      .map(it=>({name:it.name, path:`library/${catKey}/${it.name}`}))
+    const files = await res.json();
+    return files
+      .filter(filename => /\.md$/i.test(filename))
+      .map(filename => ({name: filename, path: `${cat.path}/${filename}`}))
       .sort((a,b)=> a.name.localeCompare(b.name,'ko'));
   }catch{ return []; }
 }
