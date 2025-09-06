@@ -9,55 +9,50 @@
   <link rel="icon" href="assets/icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <meta name="description" content="책자형 GitHub Pages · 카테고리별 프롬프트 복사 PWA (실시간 동기화)">
-  <!-- v10: 파일명 버저닝 -->
-  <link rel="stylesheet" href="styles.v10.css">
+  <!-- v12: Signature Landing skin -->
+  <link rel="stylesheet" href="styles.v12.css">
   <script defer src="app.js"></script>
 </head>
 <body>
   <header class="app-header">
-    <button id="btnMenu" class="btn icon" aria-label="open menu">☰</button>
+    <button id="btnMenu" class="btn icon">☰</button>
     <h1>Instruction Prompt PWA</h1>
-    <div class="spacer"></div>
-    <button id="btnFav" class="btn outline" aria-label="open favorites">★</button>
-    <button id="btnSyncAll" class="btn outline">동기화</button>
-    <button id="btnInstall" class="btn">설치</button>
+    <div class="toolbar">
+      <button id="btnFav" class="btn ghost">★</button>
+      <button id="btnSyncAll" class="btn ghost">동기화</button>
+      <button id="btnInstall" class="btn solid">설치</button>
+    </div>
   </header>
 
+  <section class="hero">
+    <div class="hero-card">
+      <span class="kicker">Prompt book · PWA</span>
+      <h2>핵심만 복사해서 쓰는<br/>모바일 프롬프트·인스트럭션 북</h2>
+      <p>카테고리 → 제목만 보고 → 즉시 복사. 즐겨찾기로 10개 고정.</p>
+    </div>
+    <div class="hero-card">
+      <span class="kicker">Guide</span>
+      <p>1. ChatGPT GPT — 페르소나 루트<br/>
+         2. 프로젝트 — 생산 스튜디오<br/>
+         3. 개별창 — 로그·마더시드<br/>
+         4. Copilot — 백서 100% 반영</p>
+    </div>
+  </section>
+
   <div class="layout">
-    <!-- 좌: 카테고리 -->
     <aside class="sidebar" id="sidebar">
       <div class="section-title">카테고리</div>
-      <nav class="category-list" id="categoryList"></nav>
-      <div class="hint">새 .md 업로드 → '동기화'로 즉시 반영</div>
+      <nav id="categoryList" class="category-list"></nav>
     </aside>
 
-    <!-- 중앙: 메인/목록 -->
     <main class="content">
-      <article class="card cover">
-        <img src="assets/cover.webp" alt="" class="cover-img">
-        <div>
-          <h2>📱 핸드폰 환경 PWA · 나만의 프롬프트/인스트럭션<br>📱 PWA on Mobile · My Prompts & Instructions</h2>
-          <p>모바일 PWA 개인 프롬프트북. 구조화된 사고와 창작 확장을 돕습니다.<br>
-          PWA-based personal prompt book for structured thinking and creative expansion.</p>
-        </div>
-      </article>
-
-      <section class="card">
-        <h3>📂 카테고리 안내 / Category Guide</h3>
-        <ul>
-          <li><b>1. ChatGPT GPT</b> — 역할별 페르소나 창 루트 / Persona-root prompts</li>
-          <li><b>2. ChatGPT 프로젝트</b> — 생산 스튜디오(Project) 인스트럭션</li>
-          <li><b>3. ChatGPT 개별창</b> — 긴 대화/회의록 정리·마더시드 압축</li>
-          <li><b>4. GitHub Copilot 지침</b> — 백서를 100% 반영하는 에이전트 인스트럭션</li>
-        </ul>
+      <section id="promptList" class="grid">
+        <!-- app.js 가 카드(.prompt)로 렌더 -->
       </section>
 
-      <section id="promptList" class="grid"></section>
-
-      <!-- Imprint / Publisher Info + EN/KR 토글 -->
       <section class="card imprint" aria-labelledby="imprint-title">
         <div class="imprint-header">
-          <h3 id="imprint-title">Imprint · Publisher Info</h3>
+          <h3 id="imprint-title">Imprint · 발행 정보</h3>
           <div class="lang-toggle">
             <button class="btn outline small" data-lang="en" aria-pressed="true">EN</button>
             <button class="btn outline small" data-lang="kr" aria-pressed="false">KR</button>
@@ -86,19 +81,17 @@
       </section>
     </main>
 
-    <!-- 우: 즐겨찾기 -->
     <aside class="favorites" id="favorites">
-      <div class="section-title">자주 쓰는 프롬프트 (최대 10)</div>
+      <div class="section-title">자주 쓰는 프롬프트</div>
       <ul id="favList" class="fav-list"></ul>
-      <div class="hint">/config/favorites.json 관리</div>
     </aside>
   </div>
 
   <!-- 모바일 드로어용 스크림 -->
-  <div id="scrim" class="scrim" hidden></div>
+  <div id="scrim" class="scrim"></div>
 
   <footer class="app-footer">
-    <small>© dtslib. All rights reserved. · <span id="appVersion">v10</span></small>
+    <small>© dtslib. All rights reserved. · <span id="appVersion">v12</span></small>
   </footer>
 </body>
 </html>
