@@ -9,96 +9,85 @@
   <link rel="icon" href="assets/icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <meta name="description" content="책자형 GitHub Pages · 카테고리별 프롬프트 복사 PWA (실시간 동기화)">
-  <!-- v12: Signature Landing skin -->
-  <link rel="stylesheet" href="styles.v12.css">
+  <!-- v14: Clean Tree skin -->
+  <link rel="stylesheet" href="styles.v14.css">
   <script defer src="app.js"></script>
 </head>
 <body>
   <header class="app-header">
-    <button id="btnMenu" class="btn ghost">☰</button>
-    <h1>Instruction Prompt PWA</h1>
-    <div class="toolbar">
-      <button id="btnFav" class="btn ghost">★</button>
-      <button id="btnSyncAll" class="btn ghost">동기화</button>
-      <button id="btnInstall" class="btn solid">설치</button>
+    <div class="inner container">
+      <div class="app-title">Instruction Prompt PWA</div>
+      <div class="toolbar">
+        <button id="btnSyncAll" class="btn ghost">동기화</button>
+        <button id="btnInstall" class="btn solid">설치</button>
+      </div>
     </div>
   </header>
 
   <section class="hero">
-    <div class="hero-card">
-      <span class="kicker">Prompt book · PWA</span>
-      <h2>핵심만 복사하는 모바일 인스트럭션 북</h2>
-      <p>카테고리 → 제목만 보고 → 즉시 복사. 즐겨찾기 10개 고정.</p>
-    </div>
-    <div class="hero-card">
-      <span class="kicker">Guide</span>
-      <p>1. ChatGPT GPT — 페르소나 루트<br/>
-         2. 프로젝트 — 생산 스튜디오<br/>
-         3. 개별창 — 로그·마더시드<br/>
-         4. Copilot — 백서 반영</p>
-    </div>
-  </section>
-
-  <!-- Tree visualization section -->
-  <section class="tree-section">
-    <div class="tree-container">
-      <svg id="tree" width="300" height="300" viewBox="0 0 300 300"></svg>
+    <div class="container">
+      <div class="grid">
+        <div class="hero-card">
+          <span class="kicker">Prompt book · PWA</span>
+          <h2>핵심만 복사하는 모바일 인스트럭션 북</h2>
+          <p>카테고리 → 제목만 보고 → 즉시 복사. 즐겨찾기 10개 고정.</p>
+        </div>
+        <div class="hero-card">
+          <span class="kicker">Guide</span>
+          <p>1. ChatGPT GPT — 페르소나 루트<br/>2. 프로젝트 — 생산 스튜디오<br/>3. 개별창 — 로그·마더시드<br/>4. Copilot — 백서 반영</p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <div class="layout">
-    <aside class="sidebar" id="sidebar">
-      <div class="section-title">카테고리</div>
-      <nav id="categoryList" class="category-list"></nav>
-    </aside>
-
-    <main class="content">
-      <section id="promptList" class="grid">
-        <!-- app.js 가 카드(.prompt)로 렌더 -->
-      </section>
-
-      <section class="card imprint" aria-labelledby="imprint-title">
-        <div class="imprint-header">
-          <h3 id="imprint-title">Imprint · 발행 정보</h3>
-          <div class="lang-toggle">
-            <button class="btn outline small" data-lang="en" aria-pressed="true">EN</button>
-            <button class="btn outline small" data-lang="kr" aria-pressed="false">KR</button>
-          </div>
+  <main class="main">
+    <div class="container columns">
+      <!-- 좌: 트리 + 아코디언 -->
+      <aside class="side">
+        <div class="section-title">카테고리</div>
+        <div class="tree">
+          <svg id="treeSvg" viewBox="0 0 300 160" aria-hidden="true"></svg>
+          <!-- JS가 .node를 배치 -->
         </div>
 
-        <!-- EN -->
-        <dl class="imprint-list" data-lang="en">
-          <div class="row"><dt>Company Name</dt><dd>dtslib</dd></div>
-          <div class="row"><dt>Business Reg. No.</dt><dd>475-01-03493</dd></div>
-          <div class="row"><dt>Publisher Declaration No.</dt><dd>2024-000013</dd></div>
-          <div class="row"><dt>Address</dt><dd>305, 16, Waryong-ro, Manan-gu, Anyang-si, Gyeonggi-do, Republic of Korea</dd></div>
-          <div class="row"><dt>E-mail</dt><dd><a href="mailto:dimas@dtslib.com">dimas@dtslib.com</a></dd></div>
-        </dl>
-        <p class="imprint-note" data-lang="en">This site may use cookies for basic analytics.</p>
+        <div class="acc" id="acc">
+          <!-- JS가 카테고리별 아코디언을 생성 -->
+        </div>
+      </aside>
 
-        <!-- KR -->
-        <dl class="imprint-list" data-lang="kr" hidden>
-          <div class="row"><dt>회사명</dt><dd>dtslib</dd></div>
-          <div class="row"><dt>사업자등록번호</dt><dd>475-01-03493</dd></div>
-          <div class="row"><dt>출판사 신고번호</dt><dd>2024-000013</dd></div>
-          <div class="row"><dt>주소</dt><dd>경기도 안양시 만안구 와룡로 16, 305호</dd></div>
-          <div class="row"><dt>이메일</dt><dd><a href="mailto:dimas@dtslib.com">dimas@dtslib.com</a></dd></div>
-        </dl>
-        <p class="imprint-note" data-lang="kr" hidden>이 사이트는 기본 분석 목적으로 쿠키를 사용할 수 있습니다.</p>
+      <!-- 중: 프롬프트 카드 -->
+      <section class="content">
+        <div id="promptGrid" class="grid"></div>
+
+        <!-- Imprint -->
+        <section class="imprint" aria-labelledby="imp-title">
+          <h3 id="imp-title">Imprint · 발행 정보</h3>
+          <div class="imp-grid">
+            <div class="row"><div class="k">Company Name</div><div class="v">dtslib</div></div>
+            <div class="row"><div class="k">Business Reg. No.</div><div class="v">475-01-03493</div></div>
+            <div class="row"><div class="k">Publisher Declaration No.</div><div class="v">2024-000013</div></div>
+            <div class="row"><div class="k">Address</div><div class="v">305, 16, Waryong-ro, Manan-gu, Anyang-si, Gyeonggi-do, Republic of Korea</div></div>
+            <div class="row"><div class="k">E-mail</div><div class="v"><a href="mailto:dimas@dtslib.com">dimas@dtslib.com</a></div></div>
+            <div class="row"><div class="k">쿠키 안내</div><div class="v">This site may use cookies for basic analytics.</div></div>
+          </div>
+        </section>
       </section>
-    </main>
 
-    <aside class="favorites" id="favorites">
-      <div class="section-title">자주 쓰는 프롬프트</div>
-      <ul id="favList" class="fav-list"></ul>
-    </aside>
-  </div>
+      <!-- 우: 즐겨찾기 -->
+      <aside class="fav">
+        <div class="section-title">자주 쓰는 프롬프트</div>
+        <ul id="favList" class="fav-list"></ul>
+      </aside>
+    </div>
+  </main>
 
   <!-- 모바일 드로어용 스크림 -->
   <div id="scrim" class="scrim"></div>
 
   <footer class="app-footer">
-    <small>© dtslib. All rights reserved. · <span id="appVersion">v12</span></small>
+    <div class="container">
+      <small>© dtslib. All rights reserved. · <span id="appVersion">v14</span></small>
+    </div>
   </footer>
 </body>
 </html>
