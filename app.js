@@ -26,7 +26,8 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   if ('serviceWorker' in navigator) { try { await navigator.serviceWorker.register('sw.js'); } catch {} }
 
   // 버전 표기
-  const ver = $('#appVersion'); if (ver) ver.textContent = 'v12';
+  const v=document.getElementById('appVersion');
+  if(v) v.textContent='v12';
 
   // v12: 드로어 제스처
   const scrim=document.getElementById('scrim');
