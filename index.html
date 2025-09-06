@@ -127,6 +127,51 @@ button:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-of
 @media (prefers-reduced-motion:reduce){
   *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+/* ===== Mobile hotfix: force single-column & kill legacy columns ===== */
+@media (max-width: 600px) {
+  html, body { width:100%; max-width:100%; overflow-x:hidden; }
+
+  /* 과거 3열 레이아웃 CSS 무력화 */
+  .main,
+  main,
+  section,
+  article,
+  aside,
+  [class*="grid"],
+  [class*="row"],
+  [class*="col"],
+  [class*="column"],
+  [class*="columns"] {
+    display:block !important;
+    width:100% !important;
+    max-width:100% !important;
+    float:none !important;
+    grid-template-columns: 1fr !important;
+    column-count: 1 !important;
+  }
+
+  /* 좌/중/우 패널 잔여 스타일 제거 */
+  .categories, .imprint, .favorites-panel, .categories-wrap {
+    width:100% !important;
+    position:static !important;
+    top:auto !important;
+    left:auto !important;
+    right:auto !important;
+    margin:0 0 16px 0 !important;
+  }
+
+  /* 카드/표 넘침 방지 */
+  .prompt-card, .card, table, .table, .list, .panel {
+    max-width:100% !important;
+    overflow-x:auto;
+  }
+
+  /* 모바일 여백/타이포 보정 */
+  .hero { padding: 16px !important; }
+  .category-header { padding: 12px !important; min-height: 56px !important; }
+  .prompt-cards { padding: 0 12px 12px !important; }
+}
   </style>
 </head>
 <body>
@@ -185,13 +230,13 @@ button:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-of
 </main>
 
 <footer class="app-footer">
-  <small>© dtslib. All rights reserved. · <span id="appVersion">v17-mini</span></small>
+  <small>© dtslib. All rights reserved. · <span id="appVersion">v17-mini.1</span></small>
 </footer>
 
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{
   // version
-  const v=document.getElementById('appVersion'); if(v) v.textContent='v17-mini';
+  const v=document.getElementById('appVersion'); if(v) v.textContent='v17-mini.1';
 
   // categories
   const CATS=[
