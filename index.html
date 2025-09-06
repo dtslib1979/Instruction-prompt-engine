@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#cd853f" />
+  <title>Instruction Prompt PWA · Parksy</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <meta name="description" content="책자형 GitHub Pages · 카테고리별 프롬프트 복사 PWA (실시간 동기화)">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <button id="btnMenu" class="btn icon" aria-label="open menu">☰</button>
+    <h1>Instruction Prompt PWA</h1>
+    <div class="spacer"></div>
+    <button id="btnSyncAll" class="btn outline">동기화</button>
+    <button id="btnInstall" class="btn">설치</button>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="section-title">카테고리</div>
+      <nav class="category-list" id="categoryList"></nav>
+      <div class="hint">새 .md 업로드 → '동기화'로 즉시 반영</div>
+    </aside>
+
+    <main class="content">
+      <article class="card cover">
+        <img src="assets/cover.webp" alt="" class="cover-img">
+        <div>
+          <h2>📱 PWA on Mobile · My Prompts</h2>
+          <p>나만의 프롬프트 / 인스트럭션 북<br>My own prompt/instruction book</p>
+        </div>
+      </article>
+      <section class="card">
+        <h3>📂 Category Guide</h3>
+        <ul>
+          <li><b>1. ChatGPT GPT</b> – 페르소나 루트 / Persona roots</li>
+          <li><b>2. ChatGPT 프로젝트</b> – 생산 스튜디오 / Project studio</li>
+          <li><b>3. ChatGPT 개별창</b> – 로그 정리·마더시드 / Logs & master-seed</li>
+          <li><b>4. GitHub Copilot</b> – 백서 반영 인스트럭션 / Copilot instruction modeling</li>
+        </ul>
+      </section>
+      <section id="promptList" class="grid"></section>
+    </main>
+
+    <aside class="favorites" id="favorites">
+      <div class="section-title">자주 쓰는 프롬프트</div>
+      <ul id="favList" class="fav-list"></ul>
+      <div class="hint">/config/favorites.json 관리</div>
+    </aside>
+  </div>
+
+  <footer class="app-footer">
+    <small>© Parksy · 실시간 카운트 · 오프라인 PWA</small>
+  </footer>
+</body>
+</html>

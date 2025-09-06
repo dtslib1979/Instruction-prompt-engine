@@ -1,0 +1,6 @@
+{
+  "favorites": [
+    { "title": "System Prompt 뼈대", "path": "library/chatgpt-gpt/01-basic-system.md" },
+    { "title": "커밋 스타일", "path": "library/github-copilot/01-commit-style.md" }
+  ]
+}
