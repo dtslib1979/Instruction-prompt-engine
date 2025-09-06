@@ -1,8 +1,8 @@
-const CACHE = 'instruction-pwa-v8';
+const CACHE = 'instruction-pwa-v10';
 const CORE = [
   './',
   './index.html',
-  './styles.v8.css',
+  './styles.v10.css',
   './app.js',
   './manifest.webmanifest',
   './assets/icon-192.png',
