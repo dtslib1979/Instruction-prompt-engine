@@ -1,0 +1,87 @@
+/* v14 — Clean Tree (Papyrus/Ochre) */
+:root{
+  --bg:#f4efe4; --paper:#fffdf8; --ink:#171614; --muted:#6e675d;
+  --line:#e8decb; --accent:#c9952e; --accent2:#a56a1d; --ok:#2aa86b;
+  --r-lg:18px; --r-xl:24px; --shadow:0 14px 36px rgba(120,90,40,.16);
+}
+*{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.65 ui-sans-serif,Inter,"Noto Sans KR",system-ui,-apple-system,Roboto,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3{margin:0} a{color:#7b4f12;text-decoration:none}
+.container{max-width:1240px;margin:0 auto;padding:0 16px}
+
+/* Header */
+.app-header{position:sticky;top:0;z-index:50;background:rgba(244,239,228,.9);
+  border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.app-header .inner{display:flex;align-items:center;gap:12px;padding:14px 12px}
+.app-title{font-weight:1000;font-size:1.05rem;letter-spacing:.2px}
+.toolbar{margin-left:auto;display:flex;gap:8px}
+.btn{border:none;border-radius:999px;padding:.6rem 1rem;font-weight:900;cursor:pointer}
+.btn.solid{background:var(--accent);color:#2b1e0b;box-shadow:var(--shadow)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--accent2)}
+
+/* Hero */
+.hero{padding:14px 0}
+.hero .grid{display:grid;gap:14px;grid-template-columns:1.1fr .9fr}
+.hero-card{background:linear-gradient(180deg,var(--paper),#fff7e6);border:1px solid var(--line);
+  border-radius:var(--r-xl);box-shadow:var(--shadow);padding:22px}
+.kicker{display:inline-block;background:#f6e7c8;color:#6b5027;padding:.2rem .6rem;
+  border-radius:999px;font-weight:1000;font-size:.82rem}
+.hero h2{margin:.6rem 0 0;font-weight:1000;font-size:1.6rem}
+.hero p{color:var(--muted)}
+
+/* Layout */
+.main{padding:6px 0 18px}
+.columns{display:grid;gap:18px;grid-template-columns:280px 1fr 320px}
+
+/* Sidebar (Tree + Accordion) */
+.side{align-self:start;background:var(--paper);border:1px solid var(--line);
+  border-radius:var(--r-xl);box-shadow:var(--shadow);padding:14px}
+.section-title{font-weight:1000;margin-bottom:.6rem}
+.tree{position:relative;margin-bottom:10px}
+.tree svg{width:100%;height:160px;display:block}
+.node{position:absolute;transform:translate(-50%,-50%);display:flex;gap:8px;align-items:center;
+  background:#fff;border:1px solid var(--line);padding:.45rem .65rem;border-radius:999px;box-shadow:var(--shadow)}
+.node .dot{width:10px;height:10px;border-radius:50%;background:var(--ok)}
+.badge{background:var(--accent);color:#2b1e0b;border-radius:999px;padding:.1rem .5rem;font-weight:900;font-size:.78rem}
+
+.acc{border-top:1px solid var(--line);margin-top:10px}
+.acc-item{border-bottom:1px solid var(--line)}
+.acc-btn{width:100%;text-align:left;background:transparent;border:none;padding:.8rem .2rem;
+  font-weight:900;display:flex;justify-content:space-between;align-items:center}
+.acc-panel{display:none;padding:0 0 .7rem 0}
+.acc-item.open .acc-panel{display:block}
+
+/* Prompt cards */
+.content{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-xl);
+  box-shadow:var(--shadow);padding:14px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;
+  justify-content:space-between;align-items:center}
+.title{font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copy{background:var(--ok);color:#fff;border:none;border-radius:999px;padding:.45rem .75rem;font-weight:1000}
+
+/* Favorites */
+.fav{align-self:start;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-xl);
+  box-shadow:var(--shadow);padding:14px}
+.fav-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.fav-item{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);
+  border-radius:14px;padding:12px}
+
+/* Imprint (2 columns) */
+.imprint{margin-top:12px}
+.imprint h3{font-size:1.05rem;font-weight:1000;margin-bottom:.5rem}
+.imp-grid{display:grid;grid-template-columns:220px 1fr;gap:10px;border-top:1px solid var(--line)}
+.row{display:contents}
+.k{font-weight:900;padding:10px 0;border-bottom:1px solid var(--line)}
+.v{padding:10px 0;border-bottom:1px solid var(--line);word-break:keep-all;overflow-wrap:anywhere}
+
+/* Footer */
+.app-footer{text-align:center;color:#8b7f6a;padding:18px}
+
+/* Mobile */
+@media (max-width:1080px){
+  .hero .grid{grid-template-columns:1fr}
+  .columns{grid-template-columns:1fr}
+  .fav{display:none}
+}
