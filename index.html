@@ -1,93 +1,72 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#cd853f" />
-  <title>Instruction Prompt PWA · Parksy</title>
+  <meta name="theme-color" content="#c9952e" />
+  <title>Instruction Prompt PWA</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
-  <meta name="description" content="책자형 GitHub Pages · 카테고리별 프롬프트 복사 PWA (실시간 동기화)">
-  <!-- v14: Clean Tree skin -->
-  <link rel="stylesheet" href="styles.v14.css">
+  <meta name="description" content="Mobile-first prompt book · Copy-ready instruction PWA">
+  <link rel="stylesheet" href="styles.v15.css" />
   <script defer src="app.js"></script>
 </head>
 <body>
-  <header class="app-header">
-    <div class="inner container">
-      <div class="app-title">Instruction Prompt PWA</div>
-      <div class="toolbar">
-        <button id="btnSyncAll" class="btn ghost">동기화</button>
-        <button id="btnInstall" class="btn solid">설치</button>
-      </div>
+<header class="app-header">
+  <div class="inner">
+    <div class="brand">Instruction Prompt PWA</div>
+    <div class="toolbar">
+      <button id="btnSyncAll" class="btn ghost">Sync</button>
+      <button id="btnInstall" class="btn solid">Install</button>
     </div>
-  </header>
+  </div>
+</header>
 
-  <section class="hero">
-    <div class="container">
-      <div class="grid">
-        <div class="hero-card">
-          <span class="kicker">Prompt book · PWA</span>
-          <h2>핵심만 복사하는 모바일 인스트럭션 북</h2>
-          <p>카테고리 → 제목만 보고 → 즉시 복사. 즐겨찾기 10개 고정.</p>
+<section class="hero">
+  <div class="hero-card">
+    <span class="kicker">Prompt book · PWA</span>
+    <h2>Copy-first mobile instruction book</h2>
+    <p>Open a category → scan titles → copy instantly. Pin up to 10 favorites.</p>
+  </div>
+</section>
+
+<main class="container">
+  <div class="columns">
+    <!-- Left: Categories (accordion) -->
+    <aside class="panel" id="left">
+      <h3 class="section">Categories</h3>
+      <div id="catAccordion" class="acc"></div>
+    </aside>
+
+    <!-- Center: Prompt cards -->
+    <section class="panel">
+      <div id="promptGrid" class="grid"></div>
+
+      <!-- Imprint -->
+      <section class="imprint" aria-labelledby="imp-title" style="margin-top:12px">
+        <h3 id="imp-title">Imprint</h3>
+        <div class="imp-grid">
+          <div class="row"><div class="key">Company</div><div class="val">dtslib</div></div>
+          <div class="row"><div class="key">Business Reg. No.</div><div class="val">475-01-03493</div></div>
+          <div class="row"><div class="key">Publisher Decl. No.</div><div class="val">2024-000013</div></div>
+          <div class="row"><div class="key">Address</div><div class="val">305, 16, Waryong-ro, Manan-gu, Anyang-si, Gyeonggi-do, Republic of Korea</div></div>
+          <div class="row"><div class="key">E-mail</div><div class="val"><a href="mailto:dimas@dtslib.com">dimas@dtslib.com</a></div></div>
+          <div class="row"><div class="key">Cookies</div><div class="val note">This site may use cookies for basic analytics.</div></div>
         </div>
-        <div class="hero-card">
-          <span class="kicker">Guide</span>
-          <p>1. ChatGPT GPT — 페르소나 루트<br/>2. 프로젝트 — 생산 스튜디오<br/>3. 개별창 — 로그·마더시드<br/>4. Copilot — 백서 반영</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <main class="main">
-    <div class="container columns">
-      <!-- 좌: 트리 + 아코디언 -->
-      <aside class="side">
-        <div class="section-title">카테고리</div>
-        <div class="tree">
-          <svg id="treeSvg" viewBox="0 0 300 160" aria-hidden="true"></svg>
-          <!-- JS가 .node를 배치 -->
-        </div>
-
-        <div class="acc" id="acc">
-          <!-- JS가 카테고리별 아코디언을 생성 -->
-        </div>
-      </aside>
-
-      <!-- 중: 프롬프트 카드 -->
-      <section class="content">
-        <div id="promptGrid" class="grid"></div>
-
-        <!-- Imprint -->
-        <section class="imprint" aria-labelledby="imp-title">
-          <h3 id="imp-title">Imprint · 발행 정보</h3>
-          <div class="imp-grid">
-            <div class="row"><div class="k">Company Name</div><div class="v">dtslib</div></div>
-            <div class="row"><div class="k">Business Reg. No.</div><div class="v">475-01-03493</div></div>
-            <div class="row"><div class="k">Publisher Declaration No.</div><div class="v">2024-000013</div></div>
-            <div class="row"><div class="k">Address</div><div class="v">305, 16, Waryong-ro, Manan-gu, Anyang-si, Gyeonggi-do, Republic of Korea</div></div>
-            <div class="row"><div class="k">E-mail</div><div class="v"><a href="mailto:dimas@dtslib.com">dimas@dtslib.com</a></div></div>
-            <div class="row"><div class="k">쿠키 안내</div><div class="v">This site may use cookies for basic analytics.</div></div>
-          </div>
-        </section>
       </section>
+    </section>
 
-      <!-- 우: 즐겨찾기 -->
-      <aside class="fav">
-        <div class="section-title">자주 쓰는 프롬프트</div>
-        <ul id="favList" class="fav-list"></ul>
-      </aside>
-    </div>
-  </main>
+    <!-- Right: Favorites -->
+    <aside class="panel" id="right">
+      <h3 class="section">Favorites</h3>
+      <ul id="favList" class="fav-list"></ul>
+    </aside>
+  </div>
+</main>
 
-  <!-- 모바일 드로어용 스크림 -->
-  <div id="scrim" class="scrim"></div>
-
-  <footer class="app-footer">
-    <div class="container">
-      <small>© dtslib. All rights reserved. · <span id="appVersion">v14</span></small>
-    </div>
-  </footer>
+<footer class="app-footer">
+  <small>© dtslib. All rights reserved. · <span id="appVersion">v15</span></small>
+</footer>
 </body>
 </html>
