@@ -1,0 +1,26 @@
+name: Build category index
+
+on:
+  push:
+    paths:
+      - "prompts/**.md"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Generate index.json
+        run: |
+          for dir in prompts/*/; do
+            files=$(ls "$dir"*.md 2>/dev/null | xargs -n1 basename || true)
+            echo "[" > "$dir/index.json"
+            echo "$files" | sed 's/.*/  "&",/' >> "$dir/index.json"
+            sed -i '$ s/,$//' "$dir/index.json"
+            echo "]" >> "$dir/index.json"
+          done
+      - uses: EndBug/add-and-commit@v9
+        with:
+          author_name: github-actions
+          author_email: actions@github.com
+          message: "chore: update index.json for prompts"
