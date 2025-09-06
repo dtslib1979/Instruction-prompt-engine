@@ -1,0 +1,75 @@
+/* v15 — Mobile-First (EN only) */
+:root{
+  --bg:#f5f2ea; --paper:#fffdfa; --ink:#141414; --muted:#6c665c;
+  --line:#e8decb; --accent:#c9952e; --accent2:#a56a1d; --ok:#2aa86b;
+  --r-lg:18px; --r-xl:24px; --shadow:0 12px 30px rgba(120,90,40,.16);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font:15.5px/1.65 ui-sans-serif,Inter,system-ui,-apple-system,Roboto,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3{margin:0} a{color:#7b4f12;text-decoration:none}
+
+/* Header */
+.app-header{position:sticky;top:0;z-index:50;background:rgba(245,242,234,.92);
+  border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.app-header .inner{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.brand{font-weight:1000;font-size:1.02rem;letter-spacing:.2px}
+.toolbar{margin-left:auto;display:flex;gap:8px}
+.btn{border:none;border-radius:999px;padding:.55rem .9rem;font-weight:900;cursor:pointer}
+.btn.solid{background:var(--accent);color:#2b1e0b;box-shadow:var(--shadow)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--accent2)}
+
+/* Hero */
+.hero{padding:12px 14px}
+.hero-card{background:linear-gradient(180deg,var(--paper),#fff7e6);border:1px solid var(--line);
+  border-radius:var(--r-xl);box-shadow:var(--shadow);padding:18px}
+.kicker{display:inline-block;background:#f6e7c8;color:#6b5027;padding:.18rem .56rem;
+  border-radius:999px;font-weight:1000;font-size:.8rem}
+.hero h2{margin:.5rem 0 0;font-weight:1000;font-size:1.42rem}
+.hero p{color:var(--muted);margin:.25rem 0 0}
+
+/* Columns → mobile first (1 column) */
+.container{padding:0 14px 16px}
+.columns{display:grid;gap:14px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-xl);box-shadow:var(--shadow);padding:12px}
+
+/* Category (accordion list; tree hint on tablet+) */
+.acc{display:grid;gap:10px}
+.acc-item{border:1px solid var(--line);border-radius:14px;background:#fff}
+.acc-btn{width:100%;text-align:left;border:none;background:transparent;
+  padding:.75rem .85rem;font-weight:900;display:flex;justify-content:space-between;align-items:center}
+.badge{background:var(--accent);color:#2b1e0b;border-radius:999px;padding:.08rem .55rem;font-weight:900;font-size:.78rem}
+.acc-panel{display:none;padding:0 .85rem .85rem}
+.acc-item.open .acc-panel{display:block}
+
+/* Prompt cards */
+.grid{display:grid;gap:10px;grid-template-columns:1fr}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
+.title{font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copy{background:var(--ok);color:#fff;border:none;border-radius:999px;padding:.42rem .7rem;font-weight:1000}
+
+/* Favorites */
+.fav-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.fav-item{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);
+  border-radius:14px;padding:12px}
+
+/* Imprint (2-col on wide) */
+.imprint h3{font-size:1.02rem;font-weight:1000;margin-bottom:.4rem}
+.imp-grid{display:grid;grid-template-columns:1fr;gap:8px;border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:140px 1fr;gap:10px;border-bottom:1px solid var(--line);padding:10px 0}
+.key{font-weight:900} .val{overflow-wrap:anywhere;color:var(--ink)}
+.note{color:var(--muted);margin-top:6px}
+
+/* Footer */
+.app-footer{text-align:center;color:#8b7f6a;padding:16px}
+
+/* Tablet/Desktop enhancements */
+@media (min-width:900px){
+  .columns{grid-template-columns:280px 1fr 320px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+  .imp-grid{grid-template-columns:260px 1fr}
+  .row{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){ *{scroll-behavior:auto} }
