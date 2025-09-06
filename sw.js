@@ -1,6 +1,6 @@
-// v16 SW with update notice
-const CACHE='instruction-pwa-v16';
-const CORE=['./','./index.html','./styles.v16.css','./app.js','./manifest.webmanifest',
+// v17-mini SW with update notice
+const CACHE='instruction-pwa-v17-mini';
+const CORE=['./','./index.html','./app.js','./manifest.webmanifest',
   './assets/icon-192.png','./assets/icon-512.png'];
 
 self.addEventListener('install',e=>{
