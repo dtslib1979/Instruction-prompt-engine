@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', ()=>{
   // version
-  const v=document.getElementById('appVersion'); if(v) v.textContent='v16';
+  const v=document.getElementById('appVersion'); if(v) v.textContent='v17-mini.2';
 
   // categories
   const CATS=[
@@ -58,9 +58,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
       const preview=list.slice(0,3).map(f=>f.replace(/\.md$/,'').replace(/[-_]/g,' ')).join(', ');
       const item=document.createElement('div'); item.className='acc-item';
       item.innerHTML=`
-        <button class="acc-btn" data-id="${c.id}" role="button" aria-expanded="false" aria-controls="panel-${c.id}">
+        <button class="acc-btn" data-id="${c.id}" role="button" aria-expanded="false" aria-controls="panel-${c.id}" tabindex="0">
           <span class="acc-meta"><span>${c.name}</span><span class="badge">${list.length}</span></span>
-          <span class="chev">▾</span>
+          <span class="chev">▼</span>
         </button>
         <div class="preview">${preview || 'No items yet'}</div>
         <div class="acc-panel" id="panel-${c.id}"><div class="grid" id="grid-${c.id}"></div></div>`;
@@ -75,8 +75,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
         el.innerHTML=`
           <div class="title">${title}</div>
           <div class="actions">
-            <button class="pin ${isFav(path)?'active':''}" data-title="${title}" data-path="${path}">★</button>
-            <button class="copy" data-path="${path}">Copy</button>
+            <button class="pin ${isFav(path)?'active':''}" data-title="${title}" data-path="${path}" aria-label="즐겨찾기">★</button>
+            <button class="copy" data-path="${path}" aria-label="복사">📋</button>
           </div>`;
         grid.appendChild(el);
       }
@@ -84,7 +84,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const first=document.querySelector('.acc-item'); if(first) {
       first.classList.add('open');
       const btn = first.querySelector('.acc-btn');
-      if(btn) btn.setAttribute('aria-expanded', 'true');
+      if(btn) {
+        btn.setAttribute('aria-expanded', 'true');
+        const chev = btn.querySelector('.chev');
+        if(chev) chev.textContent = '▲';
+      }
     }
     renderFav();
   })();
@@ -96,11 +100,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
     document.querySelectorAll('.acc-item').forEach(x=>{
       x.classList.remove('open');
       const accBtn = x.querySelector('.acc-btn');
+      const chev = accBtn?.querySelector('.chev');
       if(accBtn) accBtn.setAttribute('aria-expanded', 'false');
+      if(chev) chev.textContent = '▼';
     });
     if(!open) {
       it.classList.add('open');
       btn.setAttribute('aria-expanded', 'true');
+      const chev = btn.querySelector('.chev');
+      if(chev) chev.textContent = '▲';
     }
     it.scrollIntoView({behavior:'smooth',block:'start'});
   });
@@ -120,7 +128,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     if(copyBtn){
       try{const txt=await loadMD(copyBtn.dataset.path);
         await navigator.clipboard.writeText(txt);
-        toast('Copied');
+        toast('복사 완료!');
       }catch{ toast('Copy failed'); }
       return;
     }
@@ -134,10 +142,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // ---------- SW update banner ----------
   if('serviceWorker' in navigator){
     navigator.serviceWorker.addEventListener('message',e=>{
-      if(e.data && e.data.type==='NEW_VERSION'){
+      if(e.data && e.data.type==='NEW_VERSION_AVAILABLE'){
         const m=document.getElementById('updateMount');
         m.innerHTML=`<div class="update-banner">
-            New version available. <button class="u-btn" id="btnReload">Refresh</button>
+            새 버전이 준비되었습니다. <button class="u-btn" id="btnReload">새로고침</button>
           </div>`;
         document.getElementById('btnReload').onclick=()=>location.reload();
       }
@@ -148,4 +156,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); const p=e;
     document.getElementById('btnInstall')?.addEventListener('click', ()=>p.prompt(), {once:true});
   });
+
+  // Register service worker
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  }
 });

@@ -1,23 +1,23 @@
-// v17-mini SW with update notice
-const CACHE='instruction-pwa-v17-mini';
-const CORE=['./','./index.html','./app.js','./manifest.webmanifest',
+// v17-mini.2: 설치 즉시 대기 제거 & 클라이언트 고지
+const CACHE='instruction-pwa-v17-mini.2';
+const CORE=['./','./index.html','./app.js','./styles.css','./manifest.webmanifest',
   './assets/icon-192.png','./assets/icon-512.png'];
 
-self.addEventListener('install',e=>{
+self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)));
-  self.skipWaiting();
+  self.skipWaiting(); // 새 SW 즉시 활성화
 });
 
-self.addEventListener('activate',e=>{
+self.addEventListener('activate', (e) => {
   e.waitUntil(
     (async ()=>{
       const keys=await caches.keys();
       await Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)));
       await self.clients.claim();
-      // tell clients a new version is active
-      const clientsList = await self.clients.matchAll({type:'window', includeUncontrolled:true});
+      // 새 버전 신호 브로드캐스트
+      const clientsList = await self.clients.matchAll({ includeUncontrolled: true, type: 'window' });
       for (const client of clientsList){
-        client.postMessage({type:'NEW_VERSION', cache:CACHE});
+        client.postMessage({ type: 'NEW_VERSION_AVAILABLE' });
       }
     })()
   );
