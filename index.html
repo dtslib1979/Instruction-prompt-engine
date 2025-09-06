@@ -1,63 +1,57 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#cd853f" />
-  <title>Instruction Prompt PWA · Parksy</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="theme-color" content="#0f0f0f"/>
+  <title>Instruction Prompt PWA</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
-  <meta name="description" content="책자형 GitHub Pages · 카테고리별 프롬프트 복사 PWA (실시간 동기화)">
-  <!-- v8: 파일명 버저닝 -->
-  <link rel="stylesheet" href="styles.v8.css">
+  <meta name="description" content="Prompt/Instruction book on mobile (PWA)">
+  <link rel="stylesheet" href="styles.v9.css"><!-- v9 -->
   <script defer src="app.js"></script>
 </head>
 <body>
   <header class="app-header">
-    <button id="btnMenu" class="btn icon" aria-label="open menu">☰</button>
+    <button id="btnMenu" class="btn icon" aria-label="menu">☰</button>
     <h1>Instruction Prompt PWA</h1>
     <div class="spacer"></div>
-    <button id="btnFav" class="btn outline" aria-label="open favorites">★</button>
+    <button id="btnFav" class="btn outline" aria-label="favorites">★</button>
     <button id="btnSyncAll" class="btn outline">동기화</button>
     <button id="btnInstall" class="btn">설치</button>
   </header>
 
   <div class="layout">
-    <!-- 좌: 카테고리 -->
     <aside class="sidebar" id="sidebar">
       <div class="section-title">카테고리</div>
       <nav class="category-list" id="categoryList"></nav>
-      <div class="hint">새 .md 업로드 → '동기화'로 즉시 반영</div>
+      <div class="hint">.md 업로드 후 '동기화'</div>
     </aside>
 
-    <!-- 중앙: 메인/목록 -->
     <main class="content">
-      <article class="card cover">
-        <img src="assets/cover.webp" alt="" class="cover-img">
-        <div>
-          <h2>📱 핸드폰 환경 PWA · 나만의 프롬프트/인스트럭션<br>📱 PWA on Mobile · My Prompts & Instructions</h2>
-          <p>모바일 PWA 개인 프롬프트북. 구조화된 사고와 창작 확장을 돕습니다.<br>
-          PWA-based personal prompt book for structured thinking and creative expansion.</p>
-        </div>
+      <article class="hero">
+        <div class="hero-badge">PWA</div>
+        <h2>모바일에서 쓰는 나만의 Prompt · Instruction</h2>
+        <p>Think clearly. Create fast.</p>
       </article>
 
       <section class="card">
-        <h3>📂 카테고리 안내 / Category Guide</h3>
-        <ul>
-          <li><b>1. ChatGPT GPT</b> — 역할별 페르소나 창 루트 / Persona-root prompts</li>
-          <li><b>2. ChatGPT 프로젝트</b> — 생산 스튜디오(Project) 인스트럭션</li>
-          <li><b>3. ChatGPT 개별창</b> — 긴 대화/회의록 정리·마더시드 압축</li>
-          <li><b>4. GitHub Copilot 지침</b> — 백서를 100% 반영하는 에이전트 인스트럭션</li>
+        <h3>Category Guide</h3>
+        <ul class="guide">
+          <li><b>1. ChatGPT GPT</b> — Persona roots (역할 루트)</li>
+          <li><b>2. ChatGPT 프로젝트</b> — Production studio(project) prompts</li>
+          <li><b>3. ChatGPT 개별창</b> — 긴 스레드/회의록 정리 · 마더시드 압축</li>
+          <li><b>4. GitHub Copilot 지침</b> — 백서 100% 반영 에이전트 모델링</li>
         </ul>
       </section>
 
       <section id="promptList" class="grid"></section>
 
-      <!-- Imprint / Publisher Info + EN/KR 토글 -->
+      <!-- Imprint -->
       <section class="card imprint" aria-labelledby="imprint-title">
-        <div class="imprint-header">
-          <h3 id="imprint-title">Imprint · Publisher Info</h3>
+        <div class="imprint-head">
+          <h3 id="imprint-title">Imprint · 발행 정보</h3>
           <div class="lang-toggle">
             <button class="btn outline small" data-lang="en" aria-pressed="true">EN</button>
             <button class="btn outline small" data-lang="kr" aria-pressed="false">KR</button>
@@ -66,7 +60,7 @@
 
         <!-- EN -->
         <dl class="imprint-list" data-lang="en">
-          <div class="row"><dt>Company Name</dt><dd>dtslib</dd></div>
+          <div class="row"><dt>Company</dt><dd>dtslib</dd></div>
           <div class="row"><dt>Business Reg. No.</dt><dd>475-01-03493</dd></div>
           <div class="row"><dt>Publisher Declaration No.</dt><dd>2024-000013</dd></div>
           <div class="row"><dt>Address</dt><dd>305, 16, Waryong-ro, Manan-gu, Anyang-si, Gyeonggi-do, Republic of Korea</dd></div>
@@ -86,19 +80,17 @@
       </section>
     </main>
 
-    <!-- 우: 즐겨찾기 -->
     <aside class="favorites" id="favorites">
-      <div class="section-title">자주 쓰는 프롬프트 (최대 10)</div>
+      <div class="section-title">자주 쓰는 프롬프트</div>
       <ul id="favList" class="fav-list"></ul>
-      <div class="hint">/config/favorites.json 관리</div>
+      <div class="hint">/config/favorites.json</div>
     </aside>
   </div>
 
-  <!-- 모바일 드로어용 스크림 -->
   <div id="scrim" class="scrim" hidden></div>
 
   <footer class="app-footer">
-    <small>© dtslib. All rights reserved. · <span id="appVersion">v8</span></small>
+    <small>© dtslib. All rights reserved. · <span id="appVersion">v9</span></small>
   </footer>
 </body>
 </html>
