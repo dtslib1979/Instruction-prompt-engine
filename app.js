@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       const preview=list.slice(0,3).map(f=>f.replace(/\.md$/,'').replace(/[-_]/g,' ')).join(', ');
       const item=document.createElement('div'); item.className='acc-item';
       item.innerHTML=`
-        <button class="acc-btn" data-id="${c.id}">
+        <button class="acc-btn" data-id="${c.id}" role="button" aria-expanded="false" aria-controls="panel-${c.id}">
           <span class="acc-meta"><span>${c.name}</span><span class="badge">${list.length}</span></span>
           <span class="chev">▾</span>
         </button>
@@ -81,7 +81,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
         grid.appendChild(el);
       }
     }
-    const first=document.querySelector('.acc-item'); if(first) first.classList.add('open');
+    const first=document.querySelector('.acc-item'); if(first) {
+      first.classList.add('open');
+      const btn = first.querySelector('.acc-btn');
+      if(btn) btn.setAttribute('aria-expanded', 'true');
+    }
     renderFav();
   })();
 
@@ -89,8 +93,25 @@ document.addEventListener('DOMContentLoaded', ()=>{
   $acc.addEventListener('click',e=>{
     const btn=e.target.closest('.acc-btn'); if(!btn) return;
     const it=btn.parentElement, open=it.classList.contains('open');
-    document.querySelectorAll('.acc-item').forEach(x=>x.classList.remove('open'));
-    if(!open) it.classList.add('open'); it.scrollIntoView({behavior:'smooth',block:'start'});
+    document.querySelectorAll('.acc-item').forEach(x=>{
+      x.classList.remove('open');
+      const accBtn = x.querySelector('.acc-btn');
+      if(accBtn) accBtn.setAttribute('aria-expanded', 'false');
+    });
+    if(!open) {
+      it.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+    it.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  // keyboard support for accordion
+  $acc.addEventListener('keydown',e=>{
+    const btn=e.target.closest('.acc-btn'); if(!btn) return;
+    if(e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      btn.click();
+    }
   });
 
   // copy & pin handlers

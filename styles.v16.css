@@ -40,6 +40,10 @@ h1,h2,h3{margin:0} a{color:#7b4f12;text-decoration:none}
 .columns{display:grid;gap:14px}
 .panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-xl);box-shadow:var(--shadow);padding:12px}
 
+/* Focus styles for accessibility */
+button:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.acc-btn:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+
 /* Accordion (discoverable) */
 .acc{display:grid;gap:10px}
 .acc-item{border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}
@@ -90,4 +94,6 @@ h1,h2,h3{margin:0} a{color:#7b4f12;text-decoration:none}
   .imp-grid{grid-template-columns:260px 1fr}
   .row{grid-template-columns:1fr 1fr}
 }
-@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+@media (prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
