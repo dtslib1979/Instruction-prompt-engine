@@ -9,7 +9,7 @@
   <link rel="icon" href="assets/icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
   <meta name="description" content="책자형 GitHub Pages · 카테고리별 프롬프트 복사 PWA (실시간 동기화)">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.v4.css">
   <script defer src="app.js"></script>
 </head>
 <body>
@@ -56,7 +56,20 @@
   </div>
 
   <footer class="app-footer">
-    <small>© Parksy · 실시간 카운트 · 오프라인 PWA</small>
+    <small>© dtslib. All rights reserved. · <span id="appVersion">v4</span></small>
   </footer>
+  <script>
+    // 구버전 SW가 남아 있으면 1회 언레지스터
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(list=>{
+        list.forEach(reg=>{
+          if (!reg.active || (reg.active && !location.href.includes('v4'))) {
+            // 조건은 느슨하게 두고 전부 언레지스터
+            reg.unregister();
+          }
+        });
+      });
+    }
+  </script>
 </body>
 </html>

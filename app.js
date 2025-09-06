@@ -375,4 +375,8 @@ document.head.appendChild(style);
 let app;
 document.addEventListener('DOMContentLoaded', () => {
   app = new InstructionPromptPWA();
+  
+  // Set version display
+  const el = document.getElementById('appVersion');
+  if (el) el.textContent = 'v4';
 });
