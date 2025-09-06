@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   if ('serviceWorker' in navigator) { try { await navigator.serviceWorker.register('sw.js'); } catch {} }
 
   // 버전 표기
-  const ver = $('#appVersion'); if (ver) ver.textContent = 'v8';
+  const ver = $('#appVersion'); if (ver) ver.textContent = 'v10';
 
   // 설정
   try{
