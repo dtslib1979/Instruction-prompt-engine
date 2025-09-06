@@ -1,0 +1,140 @@
+:root{
+  --bg:#fafafa; --ink:#333; --muted:#6b7280; --paper:#fff; --line:#ececec;
+  --accent:#d4af37; --accent-2:#c89b2b; --shadow:0 6px 18px rgba(0,0,0,.08);
+  --radius-xl:20px; --radius-lg:16px; --radius-md:12px;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0; padding:0; background:var(--bg); color:var(--ink);
+  font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+a{color:var(--accent); text-decoration:none}
+button{font:inherit; cursor:pointer; border:none}
+
+/* Header (safe-area) */
+.app-header{
+  position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:.75rem;
+  padding-top: calc(env(safe-area-inset-top, 0px) + .8rem);
+  padding-bottom:.8rem; padding-inline:1rem;
+  background:rgba(255,255,255,.85); backdrop-filter:saturate(1.1) blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.app-header h1{margin:0; font-size:1.1rem; font-weight:700; letter-spacing:.2px;}
+.spacer{flex:1}
+
+/* Buttons */
+.btn{padding:.55rem .9rem; border-radius:999px; background:var(--accent); color:#111; font-weight:700; transition:transform .12s, box-shadow .12s, background .12s}
+.btn:hover{transform:translateY(-1px); box-shadow:var(--shadow)}
+.btn:active{transform:translateY(0)}
+.btn.outline{background:#fff; color:#111; border:1.5px solid var(--accent)}
+.btn.icon{display:inline-flex; align-items:center; justify-content:center}
+.btn.small{padding:.3rem .6rem; font-size:.82rem; font-weight:600}
+
+/* Layout */
+.layout{max-width:1200px; margin:0 auto; padding:16px; display:grid; gap:16px; grid-template-columns:240px 1fr 300px}
+.sidebar,.favorites{align-self:start; position:sticky; top:72px; background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-xl); padding:12px; box-shadow:var(--shadow)}
+.content{min-height:60vh}
+
+/* Cards */
+.section-title{font-weight:800; color:#111; margin:.3rem 0 .6rem; letter-spacing:.2px}
+.hint{margin-top:10px; color:var(--muted); font-size:.9rem}
+.card{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-xl); padding:18px; box-shadow:var(--shadow); animation:fadeUp .18s ease-out}
+.cover{display:flex; gap:14px; align-items:center}
+.cover-img{width:90px; height:90px; object-fit:cover; border-radius:14px; border:1px solid var(--line)}
+
+/* Category list */
+.category-list{display:grid; gap:8px}
+.category-list .cat-row{display:flex; align-items:center; gap:10px; padding:.55rem .7rem; border-radius:var(--radius-lg); background:#fff; border:1px solid var(--line); transition:transform .12s, box-shadow .12s, background .12s}
+.category-list .cat-row:hover{box-shadow:var(--shadow); transform:translateY(-1px)}
+.cat-row.active{outline:2px solid rgba(212,175,55,.35)}
+.cat-name{flex:1; font-weight:700; letter-spacing:.2px}
+.cat-row::before{content:"📁"; display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:999px; background:#f6f6f6; border:1px solid var(--line); font-size:14px}
+.cat-row[data-cat="chatgpt-gpt"]::before{content:"💡"}
+.cat-row[data-cat="chatgpt-project"]::before{content:"📦"}
+.cat-row[data-cat="chatgpt-thread"]::before{content:"📓"}
+.cat-row[data-cat="github-copilot"]::before{content:"🤖"}
+.cat-badge{background:var(--accent-2); color:#fff; padding:.15rem .55rem; border-radius:999px; font-size:.82rem; font-weight:700}
+.cat-upload{background:#fff; color:#111; border:1.5px solid var(--accent-2); border-radius:999px; padding:.25rem .6rem; font-size:.85rem; font-weight:700; transition:background .12s, transform .12s, box-shadow .12s}
+.cat-upload:hover{background:#fffaf0; box-shadow:var(--shadow); transform:translateY(-1px)}
+
+/* Prompt grid */
+.grid{margin-top:12px; display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.prompt-card{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 14px; border-radius:var(--radius-lg); border:1px solid var(--line); background:#fff; box-shadow:var(--shadow); transition:transform .12s, box-shadow .12s}
+.prompt-card:hover{transform:translateY(-2px); box-shadow:0 10px 24px rgba(0,0,0,.1)}
+.prompt-title{font-weight:800; color:#111; overflow:hidden; white-space:nowrap; text-overflow:ellipsis}
+.copy-btn{background:var(--accent-2); color:#fff; padding:.42rem .62rem; border-radius:999px; font-weight:800}
+
+/* Favorites */
+.fav-list{list-style:none; margin:0; padding:0; display:grid; gap:10px}
+.fav-item{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px; background:#fff; border:1px solid var(--line); border-radius:var(--radius-lg); box-shadow:var(--shadow)}
+
+/* Imprint */
+.imprint-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px}
+.imprint h3{font-size:1.05rem; font-weight:800; margin:.25rem 0 1rem; letter-spacing:.2px; color:#111}
+.imprint-list{margin:0; padding:0; display:grid; gap:10px}
+.imprint-list .row{display:grid; grid-template-columns:180px 1fr; gap:12px; padding:10px 0; border-bottom:1px solid var(--line)}
+.imprint-list .row:last-child{border-bottom:none}
+.imprint-list dt{font-weight:800; color:#111}
+.imprint-list dd{margin:0; color:var(--ink)}
+.imprint a{text-decoration:underline}
+.imprint-note{margin-top:12px; color:var(--muted); font-size:.92rem}
+
+/* Motion */
+@keyframes fadeUp{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:translateY(0)}}
+
+/* Footer */
+.app-footer{text-align:center; padding:18px 12px; color:var(--muted)}
+
+/* Scrim */
+.scrim{position:fixed; inset:0; background:rgba(0,0,0,.35); backdrop-filter:blur(1px); z-index:30; animation:fadeUp .15s ease}
+
+/* Mobile drawers */
+@media (max-width: 820px){
+  .layout{ grid-template-columns:1fr; gap:14px; padding:12px; }
+  .content{ min-height: 60svh; }
+  .favorites{ display:none; } /* 기본 숨김 — 버튼으로 열기 */
+  .sidebar{
+    position:fixed; z-index:40; inset:auto 0 0 0; top: env(safe-area-inset-top, 0px);
+    height: 100dvh; width: 86vw; max-width: 360px; border-radius: 0 16px 0 0;
+    transform: translateX(-100%); transition: transform .22s ease; box-shadow: var(--shadow);
+  }
+  .favorites.drawer{
+    display:block; position:fixed; z-index:40; right:0; top: env(safe-area-inset-top, 0px);
+    height: 100dvh; width: 86vw; max-width: 360px; border-radius: 16px 0 0 0;
+    transform: translateX(100%); transition: transform .22s ease; box-shadow: var(--shadow);
+  }
+  .drawer-open-left  .sidebar{ transform: translateX(0); }
+  .drawer-open-right .favorites.drawer{ transform: translateX(0); }
+
+  .btn{ padding:.65rem 1rem; }
+  .copy-btn{ padding:.55rem .9rem; font-weight:800; }
+  .prompt-card{ padding:14px 16px; }
+  .cover-img{ width:76px; height:76px; }
+}
+@media (max-width: 390px){
+  .app-header h1{ font-size:.98rem; }
+  .grid{ grid-template-columns: 1fr; }
+  .imprint-list .row{ grid-template-columns: 1fr; gap:6px; }
+  .imprint h3{ font-size:1rem; }
+}
+
+/* === v7: Imprint mobile fix === */
+.content, .card { min-width: 0; }
+
+/* 한글은 단어 단위 유지, 긴 영문/이메일은 적절히 줄바꿈 */
+.imprint dd, .imprint-note { word-break: keep-all; overflow-wrap: anywhere; }
+
+/* 모바일에서는 dt/dd를 1열 스택 */
+@media (max-width: 900px){
+  .imprint-list .row{
+    grid-template-columns: 1fr !important;
+    gap: 6px;
+  }
+  .imprint-list dt{ font-weight: 800; margin-bottom: 2px; }
+}
+
+/* 초소형 기기 보완 */
+@media (max-width: 390px){
+  .imprint h3{ font-size: 1rem; }
+}
