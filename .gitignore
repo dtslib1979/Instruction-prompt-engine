@@ -1,0 +1,22 @@
+# Backup files
+*.backup.html
+index.v17-mini.html
+
+# Temporary files
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node modules (if any)
+node_modules/
+
+# Build outputs
+dist/
+build/
