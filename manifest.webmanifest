@@ -1,12 +1,20 @@
 {
   "name": "Instruction Prompt PWA",
-  "short_name": "IP-PWA",
-  "start_url": "./",
+  "short_name": "Instr PWA",
+  "description": "Copy-first mobile instruction book",
+  "start_url": "/Instruction-prompt-engine/",
+  "scope": "/Instruction-prompt-engine/",
   "display": "standalone",
-  "background_color": "#f4e5c9",
-  "theme_color": "#cd853f",
+  "background_color": "#f6f2e9",
+  "theme_color": "#c9a66b",
+  "orientation": "portrait",
+  "lang": "ko",
   "icons": [
-    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "icons/pwa-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Categories", "short_name": "Categories", "url": "/Instruction-prompt-engine/#categories" },
+    { "name": "Favorites", "short_name": "Favorites", "url": "/Instruction-prompt-engine/#favorites" }
   ]
 }

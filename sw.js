@@ -1,57 +1,56 @@
-// v20
-const APP_VERSION = 'v20';
-const CACHE_NAME = `ipwa-${APP_VERSION}`;
-const ASSET_VERSION = APP_VERSION;
-
+// sw.js — v22
+const CACHE_NAME = 'ipwa-cache-v22';
 const CORE = [
-  '/', '/index.html?v=v20',
-  '/styles.css?v=v20',
-  '/app.js?v=v20',
-  '/app-version.js?v=v20',
-  '/manifest.webmanifest'
+  '/Instruction-prompt-engine/',
+  '/Instruction-prompt-engine/index.html',
+  '/Instruction-prompt-engine/styles.css?v=22',
+  '/Instruction-prompt-engine/app.js?v=22',
+  '/Instruction-prompt-engine/manifest.webmanifest'
 ];
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(CORE)));
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(CORE)));
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil((async () => {
-    const names = await caches.keys();
-    await Promise.all(names.filter(n => n !== CACHE_NAME).map(n => caches.delete(n)));
+self.addEventListener('activate', e => {
+  e.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.map(k => (k !== CACHE_NAME) && caches.delete(k)));
     await self.clients.claim();
-    const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-    clients.forEach(c => c.postMessage({ type: 'NEW_VERSION', version: APP_VERSION }));
+    const cs = await self.clients.matchAll({ includeUncontrolled: true });
+    cs.forEach(c => c.postMessage({ type: 'NEW_VERSION', ver: 'v22' }));
   })());
 });
 
-self.addEventListener('fetch', (event) => {
-  const req = event.request;
-  if (req.mode === 'navigate') {
-    event.respondWith((async () => {
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+
+  const req = e.request;
+  const accept = req.headers.get('accept') || '';
+  const isHTML = req.mode === 'navigate' || accept.includes('text/html');
+
+  e.respondWith((async () => {
+    if (isHTML) {
       try {
-        const net = await fetch(req);
-        const cache = await caches.open(CACHE_NAME);
-        cache.put('/index.html?v=v20', net.clone());
+        const net = await fetch(req, { cache: 'no-store' });
+        (await caches.open(CACHE_NAME)).put(req, net.clone());
         return net;
       } catch {
         const cache = await caches.open(CACHE_NAME);
-        return (await cache.match('/index.html?v=v20')) || Response.error();
+        return (await cache.match(req)) || cache.match('/Instruction-prompt-engine/index.html');
       }
-    })());
-    return;
-  }
-  event.respondWith((async () => {
-    const cache = await caches.open(CACHE_NAME);
-    const hit = await cache.match(req);
-    if (hit) return hit;
-    const net = await fetch(req);
-    if (net.ok) cache.put(req, net.clone());
-    return net;
+    } else {
+      const cache = await caches.open(CACHE_NAME);
+      const hit = await cache.match(req);
+      if (hit) return hit;
+      const net = await fetch(req);
+      if (net.ok) cache.put(req, net.clone());
+      return net;
+    }
   })());
 });
 
-self.addEventListener('message', (e) => {
+self.addEventListener('message', e => {
   if (e.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
