@@ -19,4 +19,4 @@ node_modules/
 
 # Build outputs
 dist/
-build/
+build/server.log
