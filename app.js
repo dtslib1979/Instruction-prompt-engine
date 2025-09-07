@@ -3,8 +3,14 @@ import { APP_VERSION } from './app-version.js?v=v23';
 const bannerId = 'update-banner';
 
 // v23: Chrome-Android 식별 클래스
-if (/Android/i.test(navigator.userAgent) && /Chrome\/\d+/.test(navigator.userAgent)) {
+const isChromeAndroid = /Android/i.test(navigator.userAgent) && /Chrome\/\d+/.test(navigator.userAgent);
+if (isChromeAndroid) {
   document.documentElement.classList.add('is-chrome-android');
+  // Chrome-Android 전용 CSS 동적 주입
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = './css/chrome-mobile-v23.css?v=23';
+  document.head.appendChild(link);
 }
 
 document.addEventListener('DOMContentLoaded', ()=>{
@@ -167,7 +173,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         await navigator.serviceWorker.register('./sw.js?v=23', { scope: './' });
         navigator.serviceWorker.addEventListener('message', (e) => {
           if (e.data?.type === 'NEW_VERSION') {
-            document.getElementById('updateBanner')?.classList.add('show');
+            document.getElementById('update-banner')?.classList.add('show');
           }
         });
       } catch (err) {
