@@ -1,14 +1,21 @@
-/* v17-mini.2 — Mobile 1-column layout with fixes */
+/* v22 — Chrome Mobile Fix + Optimized Layout */
 :root{
   --bg:#f5f2ea; --paper:#fffdfa; --ink:#141414; --muted:#6c665c;
   --line:#e8decb; --accent:#c9952e; --accent2:#a56a1d; --ok:#2aa86b; --danger:#d95c41;
   --r-lg:18px; --r-xl:24px; --shadow:0 12px 30px rgba(120,90,40,.16);
+  --space-lg:16px;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);
+
+/* Chrome/Android text auto-size stabilization */
+html{
+  margin:0;background:var(--bg);color:var(--ink);
   font:15.5px/1.65 ui-sans-serif,Inter,system-ui,-apple-system,Roboto,"Segoe UI",sans-serif;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-  overflow-x:hidden}
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+body{margin:0;overflow-x:hidden}
 h1,h2,h3{margin:0} a{color:#7b4f12;text-decoration:none}
 
 /* Header */
@@ -41,7 +48,14 @@ h1,h2,h3{margin:0} a{color:#7b4f12;text-decoration:none}
 
 /* Mobile-first Layout */
 .container{padding:0 14px 16px;width:100%;max-width:100%;overflow-x:hidden}
-.columns{display:grid;gap:14px;grid-template-columns:1fr;width:100%}
+
+/* Base grid - mobile first 1 column */
+.columns, .cards, .categories-row, .grid-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg, 16px);
+}
+
 .panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-xl);
   box-shadow:var(--shadow);padding:12px;word-wrap:break-word;min-width:0}
 
@@ -71,6 +85,20 @@ button:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-of
 .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;
   display:flex;justify-content:space-between;align-items:center;min-height:56px;
   word-wrap:break-word;min-width:0}
+
+/* Chrome mobile stabilization patches */
+.card, .panel, .tile, .col, .columns > *, .cards > *, .categories-row > * {
+  min-width: 0;       /* Core fix */
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: auto;
+}
+
+/* Prevent vertical text splitting in cards */
+.card * {
+  min-width: 0;
+  white-space: normal;
+}
 .title{font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   padding-right:8px;flex:1;min-width:0}
 .actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
@@ -95,53 +123,83 @@ button:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-of
   background:#222;color:#fff;padding:10px 14px;border-radius:12px;font-weight:800;
   opacity:.98;max-width:90%;text-align:center}
 
-/* Imprint */
-.imprint h3{font-size:1.02rem;font-weight:1000;margin-bottom:.4rem}
-.imp-grid{display:grid;grid-template-columns:1fr;gap:8px;border-top:1px solid var(--line)}
-.row{display:grid;grid-template-columns:1fr;gap:10px;border-bottom:1px solid var(--line);
-  padding:10px 0}
-.key{font-weight:900;word-wrap:break-word} 
-.val{overflow-wrap:anywhere;color:var(--ink);word-wrap:break-word} 
-.note{color:var(--muted);margin-top:6px;word-wrap:break-word}
-
 /* Footer */
 .app-footer{text-align:center;color:#8b7f6a;padding:16px}
 
+/* Tablet layout */
+@media (min-width: 481px) {
+  .columns, .cards, .categories-row, .grid-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 /* Desktop layout (≥900px) */
 @media (min-width:900px){
+  .columns, .cards, .categories-row, .grid-row {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
   .columns{grid-template-columns:280px 1fr 320px}
   .favorites-panel{display:block}
   .grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-  .imp-grid{grid-template-columns:260px 1fr}
-  .row{grid-template-columns:140px 1fr}
+}
+
+/* Landscape protection */
+@media (orientation: landscape) and (max-width: 900px) {
+  .columns, .cards, .categories-row {
+    grid-template-columns: 1fr 1fr; /* Tablet-like 2 columns max */
+  }
 }
 
 @media (prefers-reduced-motion:reduce){
   *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
 
-/* === v17-mini.3 hard-fix === */
-@media (max-width: 480px) {
-  .columns {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 1rem;
-  }
+/* Imprint page styles */
+.page-imprint .container {
+  max-width: 800px;
+  margin: 0 auto;
+}
 
-  .panel,
-  .imprint,
-  .favorites-panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    display: block !important;
-  }
+.container.narrow {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px 14px;
+}
 
-  /* 텍스트가 세로로 찢어지는 것 방지 */
-  .imprint, .imprint * {
-    word-break: normal !important;
-    overflow-wrap: anywhere !important;
-    white-space: normal !important;
-    writing-mode: horizontal-tb !important;
-  }
+.h5 {
+  font-size: 1.25rem;
+  font-weight: 900;
+  margin-bottom: 16px;
+}
+
+.imprint {
+  margin: 0;
+}
+
+.imprint dt {
+  font-weight: 900;
+  margin-top: 16px;
+  margin-bottom: 4px;
+}
+
+.imprint dt:first-child {
+  margin-top: 0;
+}
+
+.imprint dd {
+  margin: 0;
+  margin-bottom: 8px;
+  overflow-wrap: anywhere;
+}
+
+.mt-24 {
+  margin-top: 24px;
+}
+
+/* Site footer for imprint page */
+.site-footer {
+  text-align: center;
+  color: #8b7f6a;
+  padding: 16px;
+  margin-top: auto;
 }
