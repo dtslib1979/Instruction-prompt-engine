@@ -1,10 +1,11 @@
-// sw.js — v22
-const CACHE_NAME = 'ipwa-cache-v22';
+// sw.js — v23
+const CACHE_NAME = 'ipwa-cache-v23';
 const CORE = [
   '/Instruction-prompt-engine/',
   '/Instruction-prompt-engine/index.html',
-  '/Instruction-prompt-engine/styles.css?v=22',
-  '/Instruction-prompt-engine/app.js?v=22',
+  '/Instruction-prompt-engine/styles.css?v=23',
+  '/Instruction-prompt-engine/css/chrome-mobile-v23.css?v=23',
+  '/Instruction-prompt-engine/app.js?v=23',
   '/Instruction-prompt-engine/manifest.webmanifest'
 ];
 
@@ -19,7 +20,7 @@ self.addEventListener('activate', e => {
     await Promise.all(keys.map(k => (k !== CACHE_NAME) && caches.delete(k)));
     await self.clients.claim();
     const cs = await self.clients.matchAll({ includeUncontrolled: true });
-    cs.forEach(c => c.postMessage({ type: 'NEW_VERSION', ver: 'v22' }));
+    cs.forEach(c => c.postMessage({ type: 'NEW_VERSION', ver: 'v23' }));
   })());
 });
 

@@ -1,6 +1,11 @@
-import { APP_VERSION } from './app-version.js?v=v22';
+import { APP_VERSION } from './app-version.js?v=v23';
 
 const bannerId = 'update-banner';
+
+// v23: Chrome-Android 식별 클래스
+if (/Android/i.test(navigator.userAgent) && /Chrome\/\d+/.test(navigator.userAgent)) {
+  document.documentElement.classList.add('is-chrome-android');
+}
 
 document.addEventListener('DOMContentLoaded', ()=>{
   // version
@@ -159,7 +164,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if('serviceWorker' in navigator){
     window.addEventListener('load', async () => {
       try {
-        await navigator.serviceWorker.register('./sw.js?v=22', { scope: './' });
+        await navigator.serviceWorker.register('./sw.js?v=23', { scope: './' });
         navigator.serviceWorker.addEventListener('message', (e) => {
           if (e.data?.type === 'NEW_VERSION') {
             document.getElementById('updateBanner')?.classList.add('show');
@@ -200,7 +205,7 @@ function showUpdateBanner() {
 function refreshNow() {
   navigator.serviceWorker?.controller?.postMessage({ type: 'SKIP_WAITING' });
   const u = new URL(location.href);
-  u.searchParams.set('v', '22');
+  u.searchParams.set('v', '23');
   location.replace(u.toString());
 }
 
