@@ -7,7 +7,6 @@
 
   <link rel="manifest" href="./manifest.webmanifest?v=23">
   <link rel="stylesheet" href="./styles.css?v=23">
-  <link rel="stylesheet" href="./css/chrome-mobile-v23.css?v=23">
   <script type="module" src="./app.js?v=23"></script>
 </head>
 <body>
@@ -22,7 +21,7 @@
 </header>
 
   <!-- 업데이트 배너 (보이면 새로고침 유도) -->
-  <div id="updateBanner" class="update-banner" style="display:none;">
+  <div id="update-banner" class="update-banner" style="display:none;">
     새 버전(v23)이 준비되었습니다.
     <button onclick="refreshNow()">새로고침</button>
   </div>
@@ -58,7 +57,7 @@
 
   <!-- 푸터: Imprint 링크만, 버전 표기 v23 -->
   <footer class="footer">
-    <small>© dtslib · <a href="./imprint.html" rel="nofollow">Imprint</a> · <span>v23</span></small>
+    <small>© dtslib · <a href="./imprint.html" rel="nofollow">Imprint</a> · <span id="appVersion">v23</span></small>
   </footer>
 </body>
 </html>
