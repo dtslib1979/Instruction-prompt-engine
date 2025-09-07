@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', ()=>{
   // version
-  const v=document.getElementById('appVersion'); if(v) v.textContent='v17-mini.2';
+  const v=document.getElementById('appVersion'); if(v) v.textContent='v17-mini.3';
 
   // categories
   const CATS=[

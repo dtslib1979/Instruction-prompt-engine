@@ -1,5 +1,5 @@
-// v17-mini.2: 설치 즉시 대기 제거 & 클라이언트 고지
-const CACHE='instruction-pwa-v17-mini.2';
+// v17-mini.3: 설치 즉시 대기 제거 & 클라이언트 고지
+const CACHE='instruction-pwa-v17-mini.3';
 const CORE=['./','./index.html','./app.js','./styles.css','./manifest.webmanifest',
   './assets/icon-192.png','./assets/icon-512.png'];
 
