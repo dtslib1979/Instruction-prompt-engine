@@ -23,6 +23,10 @@
     {
       "files": ["scripts/**/*"],
       "env": { "node": true, "browser": false }
+    },
+    {
+      "files": ["tests/**/*"],
+      "rules": { "no-console": "off" }
     }
   ]
 }
