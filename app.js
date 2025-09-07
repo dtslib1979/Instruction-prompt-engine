@@ -1,6 +1,11 @@
 document.addEventListener('DOMContentLoaded', ()=>{
   // version
-  const v=document.getElementById('appVersion'); if(v) v.textContent='v17-mini.3';
+  const v=document.getElementById('appVersion'); if(v) v.textContent='v17.2';
+
+  // Imprint bottom sheet open/close
+  const sheet = document.getElementById('imprintSheet');
+  document.getElementById('openImprint')?.addEventListener('click', () => sheet?.showModal());
+  document.getElementById('closeImprint')?.addEventListener('click', () => sheet?.close());
 
   // categories
   const CATS=[
@@ -149,6 +154,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
           </div>`;
         document.getElementById('btnReload').onclick=()=>location.reload();
       }
+    });
+    
+    // SW 업데이트 감지(이미 배너 UI가 있으면 showUpdateBanner 사용)
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      // 간단히 즉시 리로드가 목적이면 아래 한 줄:
+      // location.reload();
     });
   }
 
