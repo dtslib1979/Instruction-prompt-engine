@@ -1,60 +1,53 @@
-// sw.js — v23
-const CACHE_NAME = 'ipwa-cache-v23';
-const CORE = [
-  '/Instruction-prompt-engine/',
-  '/Instruction-prompt-engine/index.html',
-  '/Instruction-prompt-engine/styles.css?v=23',
-  '/Instruction-prompt-engine/css/chrome-mobile-v23.css?v=23',
-  '/Instruction-prompt-engine/app.js?v=23',
-  '/Instruction-prompt-engine/manifest.webmanifest',
-  '/Instruction-prompt-engine/imprint.html',
-  '/Instruction-prompt-engine/icons/icon-192x192.png',
-  '/Instruction-prompt-engine/icons/icon-512x512.png'
-];
+/* v24.1 SW: 캐시 무시(nuke), 버전 캐시, skipWaiting/claim */
+const CACHE_NAME = 'ipwa-cache-v24-1';
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(CORE)));
+self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-self.addEventListener('activate', e => {
-  e.waitUntil((async () => {
+self.addEventListener('activate', (event) => {
+  event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.map(k => (k !== CACHE_NAME) && caches.delete(k)));
+    await Promise.all(keys.map(k => (k !== CACHE_NAME ? caches.delete(k) : Promise.resolve())));
     await self.clients.claim();
-    const cs = await self.clients.matchAll({ includeUncontrolled: true });
-    cs.forEach(c => c.postMessage({ type: 'NEW_VERSION', ver: 'v23' }));
   })());
 });
 
-self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
-
-  const req = e.request;
-  const accept = req.headers.get('accept') || '';
-  const isHTML = req.mode === 'navigate' || accept.includes('text/html');
-
-  e.respondWith((async () => {
-    if (isHTML) {
-      try {
-        const net = await fetch(req, { cache: 'no-store' });
-        (await caches.open(CACHE_NAME)).put(req, net.clone());
-        return net;
-      } catch {
-        const cache = await caches.open(CACHE_NAME);
-        return (await cache.match(req)) || cache.match('/Instruction-prompt-engine/index.html');
-      }
-    } else {
-      const cache = await caches.open(CACHE_NAME);
-      const hit = await cache.match(req);
-      if (hit) return hit;
-      const net = await fetch(req);
-      if (net.ok) cache.put(req, net.clone());
-      return net;
-    }
-  })());
+self.addEventListener('message', (event) => {
+  const msg = event.data;
+  if (msg?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  if (msg?.type === 'NUKE_CACHES') {
+    event.waitUntil((async () => {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+    })());
+  }
 });
 
-self.addEventListener('message', e => {
-  if (e.data?.type === 'SKIP_WAITING') self.skipWaiting();
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  if (req.method !== 'GET') return;
+
+  const url = new URL(req.url);
+  const nuke = url.searchParams.has('nuke');
+
+  if (nuke) {
+    // 네트워크 우선, 캐시 건너뛰기
+    event.respondWith(
+      fetch(req, { cache: 'no-store' }).catch(() => caches.match(req, { ignoreSearch: false }))
+    );
+    return;
+  }
+
+  event.respondWith((async () => {
+    const cached = await caches.match(req, { ignoreSearch: false });
+    if (cached) return cached;
+
+    const res = await fetch(req);
+    const cache = await caches.open(CACHE_NAME);
+    cache.put(req, res.clone());
+    return res;
+  })());
 });
