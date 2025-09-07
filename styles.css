@@ -145,3 +145,27 @@ button:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-of
     writing-mode: horizontal-tb !important;
   }
 }
+
+/* v22: Chrome-mobile hardening */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+* { box-sizing: border-box; overflow-wrap: anywhere; word-break: normal; }
+
+/* 그리드/플렉스 자식이 폭을 밀어내지 않도록 */
+.grid > *, .row > *, .cards > *, .columns > *, .categories > *, .favorites-panel, .card, .panel {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* 모바일 1열 고정 */
+@media (max-width: 480px) {
+  .main-grid, .grid, .categories { grid-template-columns: 1fr !important; }
+}
+
+/* 업데이트 배너 */
+.update-banner {
+  position: fixed; top: 0; left: 0; right: 0;
+  padding: 12px; background: #0b74de; color: #fff;
+  z-index: 9999; display: none; justify-content: center; gap: 8px;
+}
+.update-banner button { background: #fff; color: #0b74de; border: 0; padding: 6px 10px; border-radius: 6px; }
+.update-banner.show { display: flex; }

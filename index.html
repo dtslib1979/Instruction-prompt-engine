@@ -1,12 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <link rel="manifest" href="manifest.webmanifest"/>
-  <script type="module" src="./app-version.js?v=v20"></script>
-  <link rel="stylesheet" href="./styles.css?v=v20">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
   <title>Instruction Prompt PWA</title>
+
+  <link rel="manifest" href="./manifest.webmanifest?v=22">
+  <link rel="stylesheet" href="./styles.css?v=22">
+  <script defer src="./app.js?v=22"></script>
 </head>
 <body>
 <header class="app-header">
@@ -19,8 +20,11 @@
   </div>
 </header>
 
-<!-- Update banner mounts here when SW says NEW_VERSION -->
-<div id="updateMount"></div>
+  <!-- 업데이트 배너 (보이면 새로고침 유도) -->
+  <div id="updateBanner" class="update-banner" style="display:none;">
+    새 버전(v22)이 준비되었습니다.
+    <button onclick="refreshNow()">새로고침</button>
+  </div>
 
 <section class="hero">
   <div class="hero-card">
@@ -33,7 +37,7 @@
 <main class="container">
   <div class="columns">
     <!-- Categories (accordion) -->
-    <aside class="panel">
+    <aside class="panel" id="categories">
       <h3>Categories</h3>
       <div id="catAccordion" class="acc"></div>
     </aside>
@@ -41,40 +45,19 @@
     <!-- Prompt cards -->
     <section class="panel">
       <div id="promptGrid" class="grid"></div>
-
-      <section class="imprint" aria-labelledby="imp-title" style="margin-top:12px">
-        <h3 id="imp-title">Imprint</h3>
-        <div class="imp-grid">
-          <div class="row"><div class="key">Company</div><div class="val">dtslib</div></div>
-          <div class="row"><div class="key">Business Reg. No.</div><div class="val">475-01-03493</div></div>
-          <div class="row"><div class="key">Publisher Decl. No.</div><div class="val">2024-000013</div></div>
-          <div class="row"><div class="key">Address</div><div class="val">305, 16, Waryong-ro, Manan-gu, Anyang-si, Gyeonggi-do, Republic of Korea</div></div>
-          <div class="row"><div class="key">E-mail</div><div class="val"><a href="mailto:dimas@dtslib.com">dimas@dtslib.com</a></div></div>
-          <div class="row"><div class="key">Cookies</div><div class="val note">This site may use cookies for basic analytics.</div></div>
-        </div>
-      </section>
     </section>
 
     <!-- Favorites - only visible on desktop -->
-    <aside class="panel favorites-panel">
+    <aside class="panel favorites-panel" id="favorites">
       <h3>Favorites</h3>
       <ul id="favList" class="fav-list"></ul>
     </aside>
   </div>
 </main>
 
-<footer class="app-footer">
-  <small>© dtslib. All rights reserved. · <span id="appVersion">v17-mini.3</span></small>
-</footer>
-
-<script type="module" src="./app.js?v=v20"></script>
-<script>
-  if (!location.search.includes('v=')) {
-    const v = 'v20';
-    const url = new URL(location.href);
-    url.searchParams.set('v', v);
-    history.replaceState(null, '', url.toString());
-  }
-</script>
+  <!-- 푸터: Imprint 링크만, 버전 표기 v22 -->
+  <footer class="footer">
+    <small>© dtslib · <a href="./imprint.html" rel="nofollow">Imprint</a> · <span>v22</span></small>
+  </footer>
 </body>
 </html>

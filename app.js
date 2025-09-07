@@ -1,4 +1,4 @@
-import { APP_VERSION } from './app-version.js?v=v20';
+import { APP_VERSION } from './app-version.js?v=v22';
 
 const bannerId = 'update-banner';
 
@@ -159,17 +159,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if('serviceWorker' in navigator){
     window.addEventListener('load', async () => {
       try {
-        const reg = await navigator.serviceWorker.register('/sw.js?v=' + APP_VERSION, { scope: '/' });
-        reg.addEventListener('updatefound', () => {
-          const nw = reg.installing;
-          nw?.addEventListener('statechange', () => {
-            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-              showUpdateBanner();
-            }
-          });
-        });
+        await navigator.serviceWorker.register('./sw.js?v=22', { scope: './' });
         navigator.serviceWorker.addEventListener('message', (e) => {
-          if (e.data?.type === 'NEW_VERSION') showUpdateBanner();
+          if (e.data?.type === 'NEW_VERSION') {
+            document.getElementById('updateBanner')?.classList.add('show');
+          }
         });
       } catch (err) {
         console.error('SW register failed', err);
@@ -202,3 +196,13 @@ function showUpdateBanner() {
   };
   document.getElementById('upd-dismiss').onclick = () => el.remove();
 }
+
+function refreshNow() {
+  navigator.serviceWorker?.controller?.postMessage({ type: 'SKIP_WAITING' });
+  const u = new URL(location.href);
+  u.searchParams.set('v', '22');
+  location.replace(u.toString());
+}
+
+// Make refreshNow globally available
+window.refreshNow = refreshNow;
