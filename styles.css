@@ -120,55 +120,28 @@ button:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-of
   *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
 
-/* === v17-mini.2 mobile hard-fix === */
-:root {
-  --bp-mobile: 480px;
-}
-
-/* 레이아웃: 한 줄 강제 */
+/* === v17-mini.3 hard-fix === */
 @media (max-width: 480px) {
-  .main {
-    display: block !important;
-    grid-template-columns: 1fr !important;
+  .columns {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem;
   }
 
-  /* 좌/중/우 패널은 모두 블록으로 세로 스택 */
-  .categories,
+  .panel,
   .imprint,
   .favorites-panel {
-    display: block !important;
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
+    display: block !important;
   }
 
-  /* 카드/행이 가로폭을 밀어내지 못하게 최소폭 0 고정 */
-  .category,
-  .category-header,
-  .category-content,
-  .prompt-cards,
-  .prompt-card {
-    min-width: 0 !important;
-  }
-
-  /* 텍스트가 단어 단위로 자연스레 줄바꿈되게 */
-  .imprint, .imprint * ,
-  .prompt-card, .prompt-card * {
+  /* 텍스트가 세로로 찢어지는 것 방지 */
+  .imprint, .imprint * {
     word-break: normal !important;
-    overflow-wrap: anywhere !important;   /* 긴 이메일/URL 방지 */
+    overflow-wrap: anywhere !important;
     white-space: normal !important;
     writing-mode: horizontal-tb !important;
   }
-
-  /* 혹시 남아있을 수 있는 멀티컬럼/고정폭 제거 */
-  .imprint, .favorites-panel, .categories, .main, body {
-    column-count: initial !important;
-    column-width: auto !important;
-    width: auto !important;
-    max-width: 100% !important;
-  }
-
-  /* 내부 여백 간결화 */
-  .category-header,
-  .prompt-card { padding: 12px !important; }
 }
