@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "strict": true,
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["ES2021", "DOM", "DOM.Iterable", "WebWorker"]
+  },
+  "include": ["*.js", "*.ts", "scripts/**/*"],
+  "exclude": ["node_modules", "dist", ".repo-diagnostics"]
+}

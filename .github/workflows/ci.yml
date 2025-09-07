@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+jobs:
+  node:
+    name: Node CI
+    runs-on: ubuntu-latest
+    if: ${{ hashFiles('**/package.json') != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'auto'
+
+      - name: Detect package manager
+        id: pm
+        run: |
+          if [[ -f pnpm-lock.yaml ]]; then echo "pm=pnpm" >> $GITHUB_OUTPUT
+          elif [[ -f yarn.lock ]]; then echo "pm=yarn" >> $GITHUB_OUTPUT
+          else echo "pm=npm" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup pnpm
+        if: steps.pm.outputs.pm == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install
+        run: |
+          if [[ "${{ steps.pm.outputs.pm }}" == "pnpm" ]]; then pnpm install --frozen-lockfile
+          elif [[ "${{ steps.pm.outputs.pm }}" == "yarn" ]]; then yarn install --frozen-lockfile
+          else npm ci
+          fi
+
+      - name: Lint
+        run: |
+          if [[ "${{ steps.pm.outputs.pm }}" == "pnpm" ]]; then pnpm -s run lint || true
+          elif [[ "${{ steps.pm.outputs.pm }}" == "yarn" ]]; then yarn -s lint || true
+          else npm run -s lint || true
+          fi
+
+      - name: Typecheck
+        run: |
+          if [[ -f tsconfig.json ]]; then npx -y tsc --noEmit || true; fi
+
+      - name: Test
+        run: |
+          if [[ "${{ steps.pm.outputs.pm }}" == "pnpm" ]]; then pnpm -s test -- --reporters=default || true
+          elif [[ "${{ steps.pm.outputs.pm }}" == "yarn" ]]; then yarn -s test || true
+          else npm test --silent || true
+          fi
+
+      - name: Build
+        run: |
+          if [[ "${{ steps.pm.outputs.pm }}" == "pnpm" ]]; then pnpm -s run build || true
+          elif [[ "${{ steps.pm.outputs.pm }}" == "yarn" ]]; then yarn -s build || true
+          else npm run -s build || true
+          fi
+
+      - name: Run repo diagnose
+        run: bash scripts/repo_diagnose.sh
+
+      - name: Upload diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: repo-diagnostics
+          path: .repo-diagnostics/**

@@ -15,6 +15,7 @@ A Progressive Web App for managing and organizing your AI prompts and instructio
 ## 🛠 Installation
 
 1. **GitHub Pages Deployment**:
+
    ```bash
    # Enable GitHub Pages in repository settings
    # Settings → Pages → Deploy from a branch
@@ -54,15 +55,17 @@ A Progressive Web App for managing and organizing your AI prompts and instructio
 ## 🔧 Configuration
 
 ### Settings (`config/settings.json`)
+
 ```json
 {
   "repoOwner": "dtslib1979",
-  "repoName": "Instruction-prompt-engine", 
+  "repoName": "Instruction-prompt-engine",
   "branch": "main"
 }
 ```
 
 ### Favorites (`config/favorites.json`)
+
 ```json
 {
   "favorites": [

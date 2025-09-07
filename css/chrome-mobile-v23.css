@@ -1,31 +1,54 @@
 /* v23: Chrome-Android 강제 단일 컬럼 & 텍스트 스케일 안정화 */
-html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 
 /* 900px 이하 단일 컬럼 (main/grid 클래스는 실제 사용 중인 컨테이너에 맞춰 유지) */
 @media screen and (max-width: 900px) {
-  .main-grid, .grid, .categories, .categories-row, .cards, .columns {
+  .main-grid,
+  .grid,
+  .categories,
+  .categories-row,
+  .cards,
+  .columns {
     display: grid !important;
     grid-template-columns: 1fr !important;
     gap: var(--space-lg, 16px) !important;
   }
   /* 내용이 폭을 밀지 못하게 */
-  .main-grid > *, .grid > *, .categories > *, .categories-row > *,
-  .cards > *, .columns > * {
+  .main-grid > *,
+  .grid > *,
+  .categories > *,
+  .categories-row > *,
+  .cards > *,
+  .columns > * {
     min-width: 0 !important;
     max-width: 100% !important;
     overflow-wrap: anywhere !important;
     word-break: normal !important;
   }
   /* 긴 라벨/버튼 기본 처리 */
-  .btn, .badge, .tag, .chip { max-width: 100%; white-space: normal; }
+  .btn,
+  .badge,
+  .tag,
+  .chip {
+    max-width: 100%;
+    white-space: normal;
+  }
 }
 
 /* 세로모드에서 더 안전하게 여백 */
 @media screen and (max-width: 480px) {
-  body { padding: 8px; }
+  body {
+    padding: 8px;
+  }
 }
 
 /* PWA 설치 모드에서 주소바 스타일 숨김 */
 @media (display-mode: standalone) {
-  .url-bar, .address-bar { display: none !important; }
+  .url-bar,
+  .address-bar {
+    display: none !important;
+  }
 }
