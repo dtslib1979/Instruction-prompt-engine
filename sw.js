@@ -1,5 +1,5 @@
-// v17-mini.3: 설치 즉시 대기 제거 & 클라이언트 고지
-const CACHE='instruction-pwa-v17-mini.3';
+// v17.6: Mobile hardening with improved cache strategy
+const CACHE='static-v17.6';
 const CORE=['./','./index.html','./app.js','./styles.css','./manifest.webmanifest',
   './assets/icon-192.png','./assets/icon-512.png'];
 
@@ -24,12 +24,43 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch',e=>{
-  e.respondWith(
-    caches.match(e.request).then(r=>r||fetch(e.request).then(net=>{
-      const u=new URL(e.request.url);
-      const isHTML=e.request.mode==='navigate'||u.pathname.endsWith('.html');
-      if(isHTML) caches.open(CACHE).then(c=>c.put(e.request,net.clone())).catch(()=>{});
-      return net;
-    }).catch(()=>caches.match('./index.html')))
-  );
+  const url = new URL(e.request.url);
+  const isHTML = e.request.mode === 'navigate' || url.pathname.endsWith('.html');
+  const hasVersionQuery = url.searchParams.has('v');
+  
+  if (isHTML) {
+    // Network-first for HTML with cache fallback
+    e.respondWith(
+      fetch(e.request).then(response => {
+        // Cache successful HTML responses
+        if (response.ok) {
+          caches.open(CACHE).then(cache => cache.put(e.request, response.clone()));
+        }
+        return response;
+      }).catch(() => {
+        // Fallback to cache, then to index.html
+        return caches.match(e.request).then(cached => 
+          cached || caches.match('./index.html')
+        );
+      })
+    );
+  } else if (hasVersionQuery) {
+    // Cache-first for static files with version query
+    e.respondWith(
+      caches.match(e.request).then(cached => {
+        if (cached) return cached;
+        return fetch(e.request).then(response => {
+          if (response.ok) {
+            caches.open(CACHE).then(cache => cache.put(e.request, response.clone()));
+          }
+          return response;
+        });
+      })
+    );
+  } else {
+    // Network-first for other requests
+    e.respondWith(
+      fetch(e.request).catch(() => caches.match(e.request))
+    );
+  }
 });

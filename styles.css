@@ -1,4 +1,4 @@
-/* v17-mini.2 — Mobile 1-column layout with fixes */
+/* v17.6 — Mobile hardening with responsive layout fixes */
 :root{
   --bg:#f5f2ea; --paper:#fffdfa; --ink:#141414; --muted:#6c665c;
   --line:#e8decb; --accent:#c9952e; --accent2:#a56a1d; --ok:#2aa86b; --danger:#d95c41;
@@ -8,7 +8,7 @@
 html,body{margin:0;background:var(--bg);color:var(--ink);
   font:15.5px/1.65 ui-sans-serif,Inter,system-ui,-apple-system,Roboto,"Segoe UI",sans-serif;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-  overflow-x:hidden}
+  overflow-x:hidden;text-size-adjust:100%;word-break:keep-all;overflow-wrap:anywhere}
 h1,h2,h3{margin:0} a{color:#7b4f12;text-decoration:none}
 
 /* Header */
@@ -96,6 +96,7 @@ button:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-of
   opacity:.98;max-width:90%;text-align:center}
 
 /* Imprint */
+.imprint{width:100%;max-width:680px}
 .imprint h3{font-size:1.02rem;font-weight:1000;margin-bottom:.4rem}
 .imp-grid{display:grid;grid-template-columns:1fr;gap:8px;border-top:1px solid var(--line)}
 .row{display:grid;grid-template-columns:1fr;gap:10px;border-bottom:1px solid var(--line);
@@ -107,41 +108,31 @@ button:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-of
 /* Footer */
 .app-footer{text-align:center;color:#8b7f6a;padding:16px}
 
-/* Desktop layout (≥900px) */
+/* Dialog bottom sheet */
+dialog.sheet{border:none;border-radius:16px;width:min(680px,92vw);max-height:80vh;
+  background:var(--paper);box-shadow:var(--shadow);padding:0;margin:auto;
+  animation:slideUp 0.3s ease-out}
+dialog.sheet::backdrop{background:rgba(0,0,0,0.5)}
+dialog.sheet .sheet-header{padding:16px;border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center}
+dialog.sheet .sheet-content{padding:16px;max-height:calc(80vh - 80px);overflow-y:auto}
+dialog.sheet .sheet-close{border:none;background:var(--danger);color:#fff;
+  border-radius:50%;width:32px;height:32px;cursor:pointer;font-weight:900}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+/* Responsive layout: 1-column mobile, 2-column at 900px, 3-column at 1200px */
 @media (min-width:900px){
-  .columns{grid-template-columns:280px 1fr 320px}
-  .favorites-panel{display:block}
+  .columns{grid-template-columns:280px 1fr}
   .grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
   .imp-grid{grid-template-columns:260px 1fr}
   .row{grid-template-columns:140px 1fr}
 }
 
-@media (prefers-reduced-motion:reduce){
-  *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+@media (min-width:1200px){
+  .columns{grid-template-columns:280px 1fr 320px}
+  .favorites-panel{display:block} /* Show favorites only in 3-column layout */
 }
 
-/* === v17-mini.3 hard-fix === */
-@media (max-width: 480px) {
-  .columns {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 1rem;
-  }
-
-  .panel,
-  .imprint,
-  .favorites-panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    display: block !important;
-  }
-
-  /* 텍스트가 세로로 찢어지는 것 방지 */
-  .imprint, .imprint * {
-    word-break: normal !important;
-    overflow-wrap: anywhere !important;
-    white-space: normal !important;
-    writing-mode: horizontal-tb !important;
-  }
+@media (prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }

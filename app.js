@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', ()=>{
   // version
-  const v=document.getElementById('appVersion'); if(v) v.textContent='v17-mini.3';
+  const v=document.getElementById('appVersion'); if(v) v.textContent='v17.6';
 
   // categories
   const CATS=[
@@ -156,6 +156,28 @@ document.addEventListener('DOMContentLoaded', ()=>{
   window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); const p=e;
     document.getElementById('btnInstall')?.addEventListener('click', ()=>p.prompt(), {once:true});
   });
+
+  // Imprint dialog handling
+  const imprintDialog = document.getElementById('imprintDialog');
+  const btnImprint = document.getElementById('btnImprint');
+  const closeImprint = document.getElementById('closeImprint');
+  
+  if (imprintDialog && btnImprint && closeImprint) {
+    btnImprint.addEventListener('click', () => {
+      imprintDialog.showModal();
+    });
+    
+    closeImprint.addEventListener('click', () => {
+      imprintDialog.close();
+    });
+    
+    // Close on backdrop click
+    imprintDialog.addEventListener('click', (e) => {
+      if (e.target === imprintDialog) {
+        imprintDialog.close();
+      }
+    });
+  }
 
   // Register service worker
   if('serviceWorker' in navigator){
