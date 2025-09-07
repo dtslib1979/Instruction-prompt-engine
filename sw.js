@@ -1,13 +1,13 @@
-// v19
-const APP_VERSION = 'v19';
+// v20
+const APP_VERSION = 'v20';
 const CACHE_NAME = `ipwa-${APP_VERSION}`;
 const ASSET_VERSION = APP_VERSION;
 
 const CORE = [
-  '/', '/index.html?v=v19',
-  '/styles.css?v=v19',
-  '/app.js?v=v19',
-  '/app-version.js?v=v19',
+  '/', '/index.html?v=v20',
+  '/styles.css?v=v20',
+  '/app.js?v=v20',
+  '/app-version.js?v=v20',
   '/manifest.webmanifest'
 ];
 
@@ -33,11 +33,11 @@ self.addEventListener('fetch', (event) => {
       try {
         const net = await fetch(req);
         const cache = await caches.open(CACHE_NAME);
-        cache.put('/index.html?v=v19', net.clone());
+        cache.put('/index.html?v=v20', net.clone());
         return net;
       } catch {
         const cache = await caches.open(CACHE_NAME);
-        return (await cache.match('/index.html?v=v19')) || Response.error();
+        return (await cache.match('/index.html?v=v20')) || Response.error();
       }
     })());
     return;

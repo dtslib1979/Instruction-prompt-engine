@@ -4,8 +4,8 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <link rel="manifest" href="manifest.webmanifest"/>
-  <script type="module" src="./app-version.js?v=v19"></script>
-  <link rel="stylesheet" href="./styles.css?v=v19">
+  <script type="module" src="./app-version.js?v=v20"></script>
+  <link rel="stylesheet" href="./styles.css?v=v20">
   <title>Instruction Prompt PWA</title>
 </head>
 <body>
@@ -67,10 +67,10 @@
   <small>© dtslib. All rights reserved. · <span id="appVersion">v17-mini.3</span></small>
 </footer>
 
-<script type="module" src="./app.js?v=v19"></script>
+<script type="module" src="./app.js?v=v20"></script>
 <script>
   if (!location.search.includes('v=')) {
-    const v = 'v19';
+    const v = 'v20';
     const url = new URL(location.href);
     url.searchParams.set('v', v);
     history.replaceState(null, '', url.toString());

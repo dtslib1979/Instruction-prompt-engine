@@ -1,4 +1,4 @@
-import { APP_VERSION } from './app-version.js?v=v19';
+import { APP_VERSION } from './app-version.js?v=v20';
 
 const bannerId = 'update-banner';
 
