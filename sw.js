@@ -1,18 +1,20 @@
-// v20
-const APP_VERSION = 'v20';
-const CACHE_NAME = `ipwa-${APP_VERSION}`;
+// v22
+const APP_VERSION = 'v22';
+const CACHE_NAME = `ipwa-cache-${APP_VERSION}`;
 const ASSET_VERSION = APP_VERSION;
 
-const CORE = [
-  '/', '/index.html?v=v20',
-  '/styles.css?v=v20',
-  '/app.js?v=v20',
-  '/app-version.js?v=v20',
-  '/manifest.webmanifest'
+const PRECACHE_URLS = [
+  './',
+  './index.html',
+  './imprint.html',
+  './assets/styles.css?v=22',
+  './app.js?v=22',
+  './app-version.js?v=22',
+  './manifest.webmanifest'
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(CORE)));
+  event.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(PRECACHE_URLS)));
   self.skipWaiting();
 });
 
@@ -33,11 +35,11 @@ self.addEventListener('fetch', (event) => {
       try {
         const net = await fetch(req);
         const cache = await caches.open(CACHE_NAME);
-        cache.put('/index.html?v=v20', net.clone());
+        cache.put('/index.html?v=22', net.clone());
         return net;
       } catch {
         const cache = await caches.open(CACHE_NAME);
-        return (await cache.match('/index.html?v=v20')) || Response.error();
+        return (await cache.match('/index.html?v=22')) || Response.error();
       }
     })());
     return;

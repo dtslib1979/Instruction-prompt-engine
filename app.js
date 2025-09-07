@@ -1,10 +1,10 @@
-import { APP_VERSION } from './app-version.js?v=v20';
+import { APP_VERSION } from './app-version.js?v=22';
 
 const bannerId = 'update-banner';
 
 document.addEventListener('DOMContentLoaded', ()=>{
   // version
-  const v=document.getElementById('appVersion'); if(v) v.textContent=APP_VERSION;
+  const v=document.getElementById('app-version'); if(v) v.textContent=APP_VERSION;
 
   // categories
   const CATS=[
