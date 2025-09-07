@@ -1,4 +1,4 @@
-/* v24.1 SW: 캐시 무시(nuke), 버전 캐시, skipWaiting/claim */
+/* v24.1 SW: nuke support, versioned cache, skipWaiting/claim */
 const CACHE_NAME = 'ipwa-cache-v24-1';
 
 self.addEventListener('install', (event) => {
@@ -15,9 +15,7 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('message', (event) => {
   const msg = event.data;
-  if (msg?.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
+  if (msg?.type === 'SKIP_WAITING') self.skipWaiting();
   if (msg?.type === 'NUKE_CACHES') {
     event.waitUntil((async () => {
       const keys = await caches.keys();
@@ -34,7 +32,6 @@ self.addEventListener('fetch', (event) => {
   const nuke = url.searchParams.has('nuke');
 
   if (nuke) {
-    // 네트워크 우선, 캐시 건너뛰기
     event.respondWith(
       fetch(req, { cache: 'no-store' }).catch(() => caches.match(req, { ignoreSearch: false }))
     );
@@ -44,7 +41,6 @@ self.addEventListener('fetch', (event) => {
   event.respondWith((async () => {
     const cached = await caches.match(req, { ignoreSearch: false });
     if (cached) return cached;
-
     const res = await fetch(req);
     const cache = await caches.open(CACHE_NAME);
     cache.put(req, res.clone());

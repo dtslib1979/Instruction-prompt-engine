@@ -1,66 +1,37 @@
-# v24.1 Hotfix Guide (Chrome Android layout breakage)
+# v24.1 Chrome Android Layout Hotfix – Agent Guide
 
-목표
-- 기기·브라우저가 달라도 재현/수집/임시 보정/영구 반영이 가능하도록 안전장치 도입
+## Objective
+- On Chrome Android (narrow ≤900px), force 1-column and remove horizontal overflow.
+- Provide `?nuke=1` (hard no-cache) and `?debug=1` (debug panel).
+- Stabilize viewport/safe-area and min-content sizing.
 
-구성
-1) Remote no-cache & Debug
-2) Runtime guard (Chrome Android일 때 1열 강제)
-3) CSS 커버리지 확장
-4) 배포/검증 루틴
+## Branch/PR
+- Branch: `hotfix/v24.1-chrome-android-layout`
+- PR title: `fix(v24.1): Chrome Android 1-col runtime guard + debug panel + cache-bust`
+- Labels: `hotfix`, `mobile`, `chrome-android`
 
-## A. 원격·무캐시 테스트
+## Steps
+1. Update files per this PR (index.html, app.js, sw.js, styles.css).
+2. Bump SW `CACHE_NAME = ipwa-cache-v24-1`.
+3. Build/Deploy. Immediately verify on a real Android Chrome device via:
+   - `https://<host>/?v=24.1&nuke=1&debug=1`
+   - Debug panel shows `sw:on`, and `fix:1` when runtime guard applies.
+4. If still multi-column, note the root container class from the panel and add that selector to the CSS list.
+5. Once CSS fully covers all views, schedule removal of JS guard in next minor.
 
-- 링크 예시:
-  - https://<host>/?v=24.1&nuke=1&debug=1
-  - 필요 시 ?force1=1 로 1열 수동 강제
+## Acceptance Criteria
+- [ ] On Chrome Android ≤900px width, grid container resolves to `grid-template-columns: 1fr` (or `minmax(0,1fr)`).
+- [ ] No horizontal scroll on home and category screens.
+- [ ] `?nuke=1` replaces Service Worker and bypasses caches.
+- [ ] `?debug=1` panel renders and the `1-Column` button fixes layout instantly.
+- [ ] `100dvh/100svh` active; address bar show/hide does not produce layout break.
+- [ ] Images/media do not expand tracks (max-width:100%).
+- [ ] Text-size adjust does not cause input zoom artifacts (16px+ fonts where applicable).
 
-- 기대 동작:
-  - nuke=1 → 브라우저/서비스워커 캐시 무시
-  - debug=1 → 하단 디버그 패널(UA, vw/vh, root/cols, 1-Column 버튼, Reload)
-  - force1=1 → 런타임 1열 강제
+## Rollback
+- Revert branch. SW cache name rollback (e.g., `ipwa-cache-v24-0`) and redeploy with `?nuke=1`.
 
-## B. 런타임 가드
-
-- 조건:
-  - Chrome(Android) + 좁은 폭(≤900px) → grid 1fr 강제
-  - UA-CH(navigator.userAgentData) 사용, 미지원 폴백은 UA
-
-- 디버그 플래그:
-  - documentElement --fix-v24-1=1
-
-## C. CSS 강화
-
-- 컨테이너 선택자 커버리지 확장: [data-layout-root], .main-grid, .layout, .columns, .categories-row
-- 100dvh/svh + --vh 폴백
-- overflow-x: hidden, min-width:0 누락 방지
-- Safe area inset 적용
-
-## D. 실제 기기 재현·수정 루틴
-
-1. 내 폰 크롬에서:
-   - https://<host>/?v=24.1&nuke=1&debug=1
-   - 디버그 패널에서 root/cols 확인
-   - 1-Column 버튼 클릭 시 즉시 정상화 되는지 확인
-
-2. 여전히 다열이면:
-   - 패널 root class명을 기록 → styles.css 선택자 목록에 추가
-   - app.js 런타임 가드 fix 플래그(--fix-v24-1)가 1인지 확인
-
-3. 정상화되면:
-   - CSS에 영구 반영(선택자 추가/간격 조정)
-   - 다음 버전에서 JS 가드 범위를 축소/제거
-
-## E. 원격 디버깅(권장)
-
-- 크롬 DevTools: chrome://inspect/#devices
-- Android: 개발자 옵션 + USB 디버깅 ON → "inspect"로 DOM/CSS 실측 확인
-
-## 배포 체크리스트
-
-- [ ] sw.js CACHE_NAME = 'ipwa-cache-v24-1' 로 업데이트
-- [ ] 정적 자산 캐시 해시(가능하면 filename hash 병행)
-- [ ] 배포 직후 실제 기기에서 nuke=1로 진입해 SW가 교체됐는지 확인(sw:on)
-- [ ] 디버그 패널 값(root/cols/DPR/vw/vh) 캡쳐
-- [ ] CSS 커버리지 누락 시 선택자 추가 후 재배포
-- [ ] 이슈/PR에 스크린샷과 재현 링크 첨부
+## Notes
+- If the project uses `repeat(auto-fit, minmax(320px, 1fr))`, prefer:
+  - `repeat(auto-fill, minmax(min(100%, 320px), 1fr))` or
+  - `repeat(auto-fit, minmax(0, 1fr))` and cap children via `max-width`.
