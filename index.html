@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="ko">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Instruction Prompt PWA</title>
-    <link rel="stylesheet" href="/styles.css">
-    <link rel="stylesheet" href="/styles.hotfix-v24-1.css?v=24.1">
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.hotfix-v24-1.css?v=24.1" />
     <script type="module" src="/app.js"></script>
     <script>
       if ('serviceWorker' in navigator) {
@@ -17,59 +17,69 @@
   </head>
   <body>
     <div id="app" data-layout-root>
-<header class="app-header">
-  <div class="inner">
-    <div class="brand">Instruction Prompt PWA</div>
-    <div class="toolbar">
-      <button id="btnSyncAll" class="btn ghost">Sync</button>
-      <button id="btnInstall" class="btn solid">Install</button>
+      <header class="app-header">
+        <div class="inner">
+          <div class="brand">Instruction Prompt PWA</div>
+          <div class="toolbar">
+            <button id="btnSyncAll" class="btn ghost">Sync</button>
+            <button id="btnInstall" class="btn solid">Install</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- 업데이트 배너 (보이면 새로고침 유도) -->
+      <div id="update-banner" class="update-banner" style="display: none">
+        새 버전(v24.1)이 준비되었습니다.
+        <button onclick="refreshNow()">새로고침</button>
+      </div>
+
+      <section class="hero">
+        <div class="hero-card">
+          <span class="kicker">Prompt book · PWA</span>
+          <h2>Copy-first mobile instruction book</h2>
+          <p>Open a category → scan titles → copy instantly. Pin up to 10 favorites.</p>
+        </div>
+      </section>
+
+      <main class="container">
+        <div class="columns">
+          <!-- Categories (accordion) -->
+          <aside class="panel" id="categories">
+            <h3>Categories</h3>
+            <div id="catAccordion" class="acc"></div>
+          </aside>
+
+          <!-- Prompt cards -->
+          <section class="panel">
+            <div id="promptGrid" class="grid"></div>
+          </section>
+
+          <!-- Favorites - only visible on desktop -->
+          <aside class="panel favorites-panel" id="favorites">
+            <h3>Favorites</h3>
+            <ul id="favList" class="fav-list"></ul>
+          </aside>
+        </div>
+      </main>
+
+      <!-- 푸터: Imprint 링크만, 버전 표기 v24.1 -->
+      <footer class="footer">
+        <small
+          >© dtslib · <a href="./imprint.html" rel="nofollow">Imprint</a> ·
+          <span id="appVersion">v24.1</span></small
+        >
+      </footer>
     </div>
-  </div>
-</header>
-
-  <!-- 업데이트 배너 (보이면 새로고침 유도) -->
-  <div id="update-banner" class="update-banner" style="display:none;">
-    새 버전(v24.1)이 준비되었습니다.
-    <button onclick="refreshNow()">새로고침</button>
-  </div>
-
-<section class="hero">
-  <div class="hero-card">
-    <span class="kicker">Prompt book · PWA</span>
-    <h2>Copy-first mobile instruction book</h2>
-    <p>Open a category → scan titles → copy instantly. Pin up to 10 favorites.</p>
-  </div>
-</section>
-
-<main class="container">
-  <div class="columns">
-    <!-- Categories (accordion) -->
-    <aside class="panel" id="categories">
-      <h3>Categories</h3>
-      <div id="catAccordion" class="acc"></div>
-    </aside>
-
-    <!-- Prompt cards -->
-    <section class="panel">
-      <div id="promptGrid" class="grid"></div>
-    </section>
-
-    <!-- Favorites - only visible on desktop -->
-    <aside class="panel favorites-panel" id="favorites">
-      <h3>Favorites</h3>
-      <ul id="favList" class="fav-list"></ul>
-    </aside>
-  </div>
-</main>
-
-  <!-- 푸터: Imprint 링크만, 버전 표기 v24.1 -->
-  <footer class="footer">
-    <small>© dtslib · <a href="./imprint.html" rel="nofollow">Imprint</a> · <span id="appVersion">v24.1</span></small>
-  </footer>
-
-  </div>
 
     <!-- Debug panel: only when ?debug=1 -->
-    <script>if (new URLSearchParams(location.search).get('debug')){var s=document.createElement('script');s.src='/debug-panel.v24-1.js?v=24.1';document.body?document.body.appendChild(s):document.addEventListener('DOMContentLoaded',()=>document.body.appendChild(s));}</script>
-</body>
+    <script>
+      if (new URLSearchParams(location.search).get('debug')) {
+        var s = document.createElement('script');
+        s.src = '/debug-panel.v24-1.js?v=24.1';
+        document.body
+          ? document.body.appendChild(s)
+          : document.addEventListener('DOMContentLoaded', () => document.body.appendChild(s));
+      }
+    </script>
+  </body>
 </html>

@@ -3,7 +3,7 @@ name: Build category index
 on:
   push:
     paths:
-      - "prompts/**.md"
+      - 'prompts/**.md'
 
 jobs:
   build:
@@ -23,4 +23,4 @@ jobs:
         with:
           author_name: github-actions
           author_email: actions@github.com
-          message: "chore: update index.json for prompts"
+          message: 'chore: update index.json for prompts'

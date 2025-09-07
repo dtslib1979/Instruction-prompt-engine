@@ -1,9 +1,14 @@
 /* v24.1 Android Chrome layout hotfix (Edge safe). Keep main CSS intact; this is additive. */
 
-:root { --space-lg: 16px; }
+:root {
+  --space-lg: 16px;
+}
 
 /* Prevent horizontal overflow across browsers */
-html, body { overflow-x: clip; } /* fallback to hidden on old browsers */
+html,
+body {
+  overflow-x: clip;
+} /* fallback to hidden on old browsers */
 
 /* Viewport toolbar changes */
 .full-height {
@@ -38,12 +43,22 @@ body {
   .layout > *,
   .columns > *,
   .categories-row > *,
-  .card, .col, .grid-item, .panel, .column {
+  .card,
+  .col,
+  .grid-item,
+  .panel,
+  .column {
     min-width: 0 !important;
   }
 
-  img, video { max-width: 100%; height: auto; }
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
 /* Stabilize text auto-zoom */
-html { -webkit-text-size-adjust: 100%; }
+html {
+  -webkit-text-size-adjust: 100%;
+}

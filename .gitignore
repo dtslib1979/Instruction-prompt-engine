@@ -16,7 +16,21 @@ Thumbs.db
 
 # Node modules (if any)
 node_modules/
+.pnpm-store/
 
 # Build outputs
 dist/
 build/
+
+# Diagnostics and cache
+.repo-diagnostics/
+.cache/
+coverage/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Snapshots
+.pre_hardening_snapshot.sha
