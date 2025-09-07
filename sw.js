@@ -25,25 +25,45 @@ self.addEventListener('message', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  const req = event.request;
-  if (req.method !== 'GET') return;
-
-  const url = new URL(req.url);
-  const nuke = url.searchParams.has('nuke');
-
-  if (nuke) {
-    event.respondWith(
-      fetch(req, { cache: 'no-store' }).catch(() => caches.match(req, { ignoreSearch: false }))
-    );
-    return;
-  }
+  if (event.request.method !== 'GET') return;
 
   event.respondWith((async () => {
+    const req = event.request;
+    const url = new URL(req.url);
+
+    // nuke if present on request OR on the client (tab) URL
+    let nuke = url.searchParams.has('nuke');
+    if (!nuke && event.clientId) {
+      try {
+        const client = await self.clients.get(event.clientId);
+        if (client) {
+          const cu = new URL(client.url);
+          nuke = cu.searchParams.has('nuke');
+        }
+      } catch (_) {}
+    }
+
+    if (nuke) {
+      try {
+        return await fetch(req, { cache: 'no-store' });
+      } catch {
+        const fallback = await caches.match(req, { ignoreSearch: false });
+        if (fallback) return fallback;
+        throw new Error('Network failed and no cached fallback');
+      }
+    }
+
+    // default: cache-first with ignoreSearch:false
     const cached = await caches.match(req, { ignoreSearch: false });
     if (cached) return cached;
+
     const res = await fetch(req);
-    const cache = await caches.open(CACHE_NAME);
-    cache.put(req, res.clone());
+    try {
+      if (url.origin === self.location.origin && res.ok) {
+        const cache = await caches.open(CACHE_NAME);
+        cache.put(req, res.clone());
+      }
+    } catch (_) {}
     return res;
   })());
 });

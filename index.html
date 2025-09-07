@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Instruction Prompt PWA</title>
     <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/styles.hotfix-v24-1.css?v=24.1">
     <script type="module" src="/app.js"></script>
     <script>
       if ('serviceWorker' in navigator) {
@@ -69,37 +70,6 @@
   </div>
 
     <!-- Debug panel: only when ?debug=1 -->
-    <script>
-    (function(){
-      const qs = new URLSearchParams(location.search);
-      if (!qs.get('debug')) return;
-
-      const el = document.createElement('div');
-      el.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;font:12px/1.4 system-ui;background:#111c;border:1px solid #333;color:#fff;padding:10px;border-radius:10px';
-      function info(){
-        const root = document.querySelector('[data-layout-root],.main-grid,.layout,.columns,.categories-row');
-        const cs = root ? getComputedStyle(root) : null;
-        el.innerHTML = `
-          <b>Debug</b> · UA: ${navigator.userAgent}<br>
-          vw:${window.innerWidth} · vh:${window.innerHeight} · DPR:${window.devicePixelRatio}<br>
-          root:${root ? root.className : '(not found)'}<br>
-          display:${cs?.display} · cols:${cs?.gridTemplateColumns}<br>
-          sw:${navigator.serviceWorker?.controller ? 'on' : 'off'} · fix:${getComputedStyle(document.documentElement).getPropertyValue('--fix-v24-1')||0}
-          <button id="_force1" style="margin-left:8px">1-Column</button>
-          <button id="_reload" style="margin-left:8px">Reload</button>
-        `;
-      }
-      info(); window.addEventListener('resize', info, { passive: true });
-      el.addEventListener('click', e=>{
-        if (e.target.id==='_force1') {
-          const root = document.querySelector('[data-layout-root],.main-grid,.layout,.columns,.categories-row');
-          if (root) Object.assign(root.style,{display:'grid',gridTemplateColumns:'1fr'});
-          info();
-        }
-        if (e.target.id==='_reload') location.reload(true);
-      });
-      document.body.appendChild(el);
-    })();
-    </script>
+    <script>if (new URLSearchParams(location.search).get('debug')){var s=document.createElement('script');s.src='/debug-panel.v24-1.js?v=24.1';document.body?document.body.appendChild(s):document.addEventListener('DOMContentLoaded',()=>document.body.appendChild(s));}</script>
 </body>
 </html>
