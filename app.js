@@ -1,6 +1,10 @@
+import { APP_VERSION } from './app-version.js?v=v20';
+
+const bannerId = 'update-banner';
+
 document.addEventListener('DOMContentLoaded', ()=>{
   // version
-  const v=document.getElementById('appVersion'); if(v) v.textContent='v17-mini.3';
+  const v=document.getElementById('appVersion'); if(v) v.textContent=APP_VERSION;
 
   // categories
   const CATS=[
@@ -142,13 +146,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // ---------- SW update banner ----------
   if('serviceWorker' in navigator){
     navigator.serviceWorker.addEventListener('message',e=>{
-      if(e.data && e.data.type==='NEW_VERSION_AVAILABLE'){
-        const m=document.getElementById('updateMount');
-        m.innerHTML=`<div class="update-banner">
-            새 버전이 준비되었습니다. <button class="u-btn" id="btnReload">새로고침</button>
-          </div>`;
-        document.getElementById('btnReload').onclick=()=>location.reload();
-      }
+      if(e.data?.type === 'NEW_VERSION') showUpdateBanner();
     });
   }
 
@@ -159,6 +157,48 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   // Register service worker
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    window.addEventListener('load', async () => {
+      try {
+        const reg = await navigator.serviceWorker.register('/sw.js?v=' + APP_VERSION, { scope: '/' });
+        reg.addEventListener('updatefound', () => {
+          const nw = reg.installing;
+          nw?.addEventListener('statechange', () => {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+              showUpdateBanner();
+            }
+          });
+        });
+        navigator.serviceWorker.addEventListener('message', (e) => {
+          if (e.data?.type === 'NEW_VERSION') showUpdateBanner();
+        });
+      } catch (err) {
+        console.error('SW register failed', err);
+      }
+    });
   }
 });
+
+function showUpdateBanner() {
+  if (document.getElementById(bannerId)) return;
+  const el = document.createElement('div');
+  el.id = bannerId;
+  el.style.cssText = `
+    position:fixed;top:0;left:0;right:0;z-index:9999;
+    background:#0b74de;color:#fff;padding:12px 16px;
+    display:flex;gap:8px;justify-content:center;align-items:center;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);font-size:14px
+  `;
+  el.innerHTML = `
+    New version (${APP_VERSION}) is ready.
+    <button id="upd-refresh" style="background:#fff;border:0;border-radius:6px;padding:6px 10px;color:#0b74de;">Refresh</button>
+    <button id="upd-dismiss" style="background:transparent;border:1px solid rgba(255,255,255,.7);border-radius:6px;padding:6px 10px;color:#fff;">Later</button>
+  `;
+  document.body.appendChild(el);
+
+  document.getElementById('upd-refresh').onclick = async () => {
+    const reg = await navigator.serviceWorker.getRegistration();
+    reg?.waiting?.postMessage({ type: 'SKIP_WAITING' });
+    setTimeout(() => location.reload(), 150);
+  };
+  document.getElementById('upd-dismiss').onclick = () => el.remove();
+}
