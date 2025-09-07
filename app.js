@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', ()=>{
   // version
-  const v=document.getElementById('appVersion'); if(v) v.textContent='v17-mini.3';
+  const v=document.getElementById('appVersion'); if(v) v.textContent='v17.5';
 
   // categories
   const CATS=[
@@ -156,9 +156,4 @@ document.addEventListener('DOMContentLoaded', ()=>{
   window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); const p=e;
     document.getElementById('btnInstall')?.addEventListener('click', ()=>p.prompt(), {once:true});
   });
-
-  // Register service worker
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
-  }
 });

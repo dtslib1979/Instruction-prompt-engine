@@ -1,35 +1,51 @@
-// v17-mini.3: 설치 즉시 대기 제거 & 클라이언트 고지
-const CACHE='instruction-pwa-v17-mini.3';
-const CORE=['./','./index.html','./app.js','./styles.css','./manifest.webmanifest',
-  './assets/icon-192.png','./assets/icon-512.png'];
+// sw.js
+const CACHE_VER = 'v17.5';
+const STATIC = `static-${CACHE_VER}`;
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)));
-  self.skipWaiting(); // 새 SW 즉시 활성화
+  self.skipWaiting();
+  e.waitUntil(
+    caches.open(STATIC).then(c => c.addAll([
+      '/Instruction-prompt-engine/styles.css?v=17.5',
+      '/Instruction-prompt-engine/app.js?v=17.5',
+      '/Instruction-prompt-engine/manifest.webmanifest',
+    ]))
+  );
 });
 
 self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    (async ()=>{
-      const keys=await caches.keys();
-      await Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)));
-      await self.clients.claim();
-      // 새 버전 신호 브로드캐스트
-      const clientsList = await self.clients.matchAll({ includeUncontrolled: true, type: 'window' });
-      for (const client of clientsList){
-        client.postMessage({ type: 'NEW_VERSION_AVAILABLE' });
-      }
-    })()
-  );
+  e.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(k => k !== STATIC).map(k => caches.delete(k)));
+    await self.clients.claim();
+  })());
 });
 
-self.addEventListener('fetch',e=>{
-  e.respondWith(
-    caches.match(e.request).then(r=>r||fetch(e.request).then(net=>{
-      const u=new URL(e.request.url);
-      const isHTML=e.request.mode==='navigate'||u.pathname.endsWith('.html');
-      if(isHTML) caches.open(CACHE).then(c=>c.put(e.request,net.clone())).catch(()=>{});
-      return net;
-    }).catch(()=>caches.match('./index.html')))
-  );
+// HTML은 무조건 네트워크 우선(오프라인 fallback)
+self.addEventListener('fetch', (e) => {
+  const req = e.request;
+  const accept = req.headers.get('accept') || '';
+  const isHTML = req.mode === 'navigate' || accept.includes('text/html');
+
+  if (isHTML) {
+    e.respondWith((async () => {
+      try {
+        return await fetch(req, { cache: 'no-store' });
+      } catch {
+        const c = await caches.open(STATIC);
+        return (await c.match('/Instruction-prompt-engine/index.html')) || Response.error();
+      }
+    })());
+    return;
+  }
+
+  // 정적은 cache-first
+  e.respondWith((async () => {
+    const c = await caches.open(STATIC);
+    const hit = await c.match(req);
+    if (hit) return hit;
+    const fresh = await fetch(req);
+    if (new URL(req.url).search) c.put(req, fresh.clone()); // 버전 쿼리만 캐시
+    return fresh;
+  })());
 });

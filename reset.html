@@ -1,0 +1,21 @@
+<!doctype html><meta charset="utf-8">
+<title>Reset</title>
+<body style="font-family:system-ui;padding:16px">Resetting…</body>
+<script>
+(async () => {
+  try {
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));
+    }
+    if ('caches' in self) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+    }
+    // (선택) 로컬 스토리지/세션 초기화
+    localStorage.clear(); sessionStorage.clear();
+  } catch(e) {}
+  // 최신 페이지로 이동
+  location.href = '/Instruction-prompt-engine/?fresh=v17_5';
+})();
+</script>

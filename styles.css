@@ -5,10 +5,26 @@
   --r-lg:18px; --r-xl:24px; --shadow:0 12px 30px rgba(120,90,40,.16);
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);
+/* 단어가 한 글자씩 세로로 찢어지는 것 방지 */
+html, body {
+  word-break: keep-all;          /* 한글/영문 기본 보존 */
+  overflow-wrap: anywhere;       /* 너무 긴 토큰만 적절히 줄바꿈 */
+  margin:0;background:var(--bg);color:var(--ink);
   font:15.5px/1.65 ui-sans-serif,Inter,system-ui,-apple-system,Roboto,"Segoe UI",sans-serif;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
   overflow-x:hidden}
+
+/* 3열 그리드 강제로 1열로 */
+.main, .grid-3, .layout-3col, .columns {
+  display: grid;
+  grid-template-columns: 1fr;    /* 기본 1열 */
+  gap: 16px;
+}
+
+/* 패널 내부 콘텐츠가 좁아서 찢어지지 않도록 */
+.panel, .card, .column {
+  min-width: 0;                  /* flex/grid 자식 폭 계산 버그 방지 */
+}
 h1,h2,h3{margin:0} a{color:#7b4f12;text-decoration:none}
 
 /* Header */
@@ -107,41 +123,26 @@ button:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-of
 /* Footer */
 .app-footer{text-align:center;color:#8b7f6a;padding:16px}
 
-/* Desktop layout (≥900px) */
-@media (min-width:900px){
-  .columns{grid-template-columns:280px 1fr 320px}
+/* 태블릿 이상에서만 컬럼 증가 */
+@media (min-width: 900px) {
+  .main, .grid-3, .layout-3col, .columns { grid-template-columns: 1fr 1fr; }
   .favorites-panel{display:block}
   .grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
   .imp-grid{grid-template-columns:260px 1fr}
   .row{grid-template-columns:140px 1fr}
+}
+@media (min-width: 1200px) {
+  .main, .grid-3, .layout-3col, .columns { grid-template-columns: 1fr 1fr 1fr; }
 }
 
 @media (prefers-reduced-motion:reduce){
   *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
 
-/* === v17-mini.3 hard-fix === */
-@media (max-width: 480px) {
-  .columns {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 1rem;
-  }
-
-  .panel,
-  .imprint,
-  .favorites-panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    display: block !important;
-  }
-
-  /* 텍스트가 세로로 찢어지는 것 방지 */
-  .imprint, .imprint * {
-    word-break: normal !important;
-    overflow-wrap: anywhere !important;
-    white-space: normal !important;
-    writing-mode: horizontal-tb !important;
-  }
-}
+/* Bottom sheet styles */
+.sheet { width:min(680px, 92vw); border:none; border-radius:16px; padding:0; }
+.sheet::backdrop { background: rgba(0,0,0,.25); }
+.sheet header { display:flex; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee; }
+.sheet .sheet-body { padding:12px 16px; font-size:14px; }
+.sheet .row { display:flex; justify-content:space-between; gap:12px; padding:8px 0; }
+.link-btn { background:none; border:none; text-decoration:underline; cursor:pointer; }
