@@ -1,18 +1,37 @@
-/* v17-mini.2 — Mobile 1-column layout with fixes */
+/* v18 — Mobile-first layout hardening + modal imprint */
 :root{
-  --bg:#f5f2ea; --paper:#fffdfa; --ink:#141414; --muted:#6c665c;
+  --bg:#f8f6f0; --paper:#fff; --ink:#2c2c2c; --muted:#6c665c;
   --line:#e8decb; --accent:#c9952e; --accent2:#a56a1d; --ok:#2aa86b; --danger:#d95c41;
-  --r-lg:18px; --r-xl:24px; --shadow:0 12px 30px rgba(120,90,40,.16);
+  --r-lg:18px; --r-xl:24px; --shadow:0 2px 8px rgba(0,0,0,.06);
 }
-*{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);
-  font:15.5px/1.65 ui-sans-serif,Inter,system-ui,-apple-system,Roboto,"Segoe UI",sans-serif;
-  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-  overflow-x:hidden}
-h1,h2,h3{margin:0} a{color:#7b4f12;text-decoration:none}
+
+/* Global guards */
+html, body { height: 100%; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;     /* 가로 스크롤 차단 */
+  word-break: keep-all;   /* 영문 단어 보존 */
+  overflow-wrap: anywhere;/* 너무 긴 토큰 자동 줄바꿈 */
+  background: #f8f6f0;
+  color:#2c2c2c;
+  font-size: clamp(14px, 3.2vw, 18px);
+  margin: 0;
+  padding: 0;
+}
+
+/* 카드/패널이 컨테이너 폭을 넘지 않도록 */
+* { 
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+h1,h2,h3{margin:0} 
+a{color:#7a5a2f;text-decoration:none}
 
 /* Header */
-.app-header{position:sticky;top:0;z-index:60;background:rgba(245,242,234,.92);
+.app-header{position:sticky;top:0;z-index:60;background:rgba(248,246,240,.92);
   border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
 .app-header .inner{display:flex;align-items:center;gap:10px;padding:12px 14px;
   flex-wrap:wrap}
@@ -23,27 +42,40 @@ h1,h2,h3{margin:0} a{color:#7b4f12;text-decoration:none}
 .btn.solid{background:var(--accent);color:#2b1e0b;box-shadow:var(--shadow)}
 .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--accent2)}
 
-/* Update banner */
-.update-banner{position:sticky;top:0;z-index:70;background:#fff5d9;border:1px solid #e7c981;
-  color:#6a4c15;padding:10px 12px;display:flex;gap:10px;align-items:center;justify-content:center;
-  flex-wrap:wrap}
-.update-banner .u-btn{border:none;border-radius:999px;background:#2aa86b;color:#fff;
-  padding:.45rem .8rem;font-weight:900;min-height:44px}
-
 /* Hero */
 .hero{padding:12px 14px}
 .hero-card{background:linear-gradient(180deg,var(--paper),#fff7e6);border:1px solid var(--line);
-  border-radius:var(--r-xl);box-shadow:var(--shadow);padding:18px;word-wrap:break-word}
+  border-radius:var(--r-xl);box-shadow:var(--shadow);padding:18px}
 .kicker{display:inline-block;background:#f6e7c8;color:#6b5027;padding:.18rem .56rem;border-radius:999px;
   font-weight:1000;font-size:.8rem}
-.hero h2{margin:.5rem 0 0;font-weight:1000;font-size:1.42rem;word-wrap:break-word}
-.hero p{color:var(--muted);margin:.25rem 0 0;word-wrap:break-word}
+.hero h2{margin:.5rem 0 0;font-weight:1000;font-size:1.42rem}
+.hero p{color:var(--muted);margin:.25rem 0 0}
 
-/* Mobile-first Layout */
-.container{padding:0 14px 16px;width:100%;max-width:100%;overflow-x:hidden}
-.columns{display:grid;gap:14px;grid-template-columns:1fr;width:100%}
-.panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-xl);
-  box-shadow:var(--shadow);padding:12px;word-wrap:break-word;min-width:0}
+/* Layout (그리드) — "항상 1→2→3단" */
+.main {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;           /* default: phone 1단 */
+  padding: 0 14px 16px;
+}
+
+@media (min-width: 900px) {
+  .main { grid-template-columns: 2fr 1fr; } /* tablet: listing + side */
+}
+@media (min-width: 1200px) {
+  .main { grid-template-columns: 1fr 1fr 1fr; } /* desktop 3단 */
+}
+
+/* 각 칼럼 공통 카드 */
+.panel {
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+  padding:16px;
+}
+
+/* 카테고리 칼럼이 너무 좁아지지 않게 하지만 넘치진 않게 */
+.column { min-width: 0; }
 
 /* Focus styles for accessibility */
 button:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -57,20 +89,20 @@ button:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-of
   min-height:44px;cursor:pointer}
 .acc-btn:hover{background:rgba(201,149,46,.05)}
 .acc-meta{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
-.acc-meta span:first-child{word-wrap:break-word;overflow-wrap:break-word}
+.acc-meta span:first-child{overflow-wrap:anywhere}
 .badge{background:var(--accent);color:#2b1e0b;border-radius:999px;padding:.08rem .55rem;
   font-weight:900;font-size:.78rem;flex-shrink:0}
 .chev{transition:.2s transform;flex-shrink:0;font-size:1.1rem}
 .acc-item.open .chev{transform:rotate(180deg)}
-.preview{color:var(--muted);font-size:.9rem;padding:0 14px 10px;word-wrap:break-word}
+.preview{color:var(--muted);font-size:.9rem;padding:0 14px 10px;overflow-wrap:anywhere}
 .acc-panel{display:none;padding:0 .85rem .85rem}
 .acc-item.open .acc-panel{display:block}
 
 /* Prompt cards */
-.grid{display:grid;gap:10px;grid-template-columns:1fr;width:100%}
+.grid{display:grid;gap:10px;grid-template-columns:1fr}
 .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;
   display:flex;justify-content:space-between;align-items:center;min-height:56px;
-  word-wrap:break-word;min-width:0}
+  min-width:0}
 .title{font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   padding-right:8px;flex:1;min-width:0}
 .actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
@@ -85,7 +117,7 @@ button:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-of
 .favorites-panel{display:none}
 .fav-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 .fav-item{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);
-  border-radius:14px;padding:12px;word-wrap:break-word;min-width:0}
+  border-radius:14px;padding:12px;min-width:0}
 .fav-title{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
 .fav-remove{border:none;border-radius:999px;background:var(--danger);color:#fff;padding:.42rem .7rem;
   font-weight:900;min-height:44px;min-width:44px;cursor:pointer;flex-shrink:0}
@@ -95,53 +127,29 @@ button:focus-visible, a:focus-visible{outline:2px solid var(--accent);outline-of
   background:#222;color:#fff;padding:10px 14px;border-radius:12px;font-weight:800;
   opacity:.98;max-width:90%;text-align:center}
 
-/* Imprint */
-.imprint h3{font-size:1.02rem;font-weight:1000;margin-bottom:.4rem}
-.imp-grid{display:grid;grid-template-columns:1fr;gap:8px;border-top:1px solid var(--line)}
-.row{display:grid;grid-template-columns:1fr;gap:10px;border-bottom:1px solid var(--line);
-  padding:10px 0}
-.key{font-weight:900;word-wrap:break-word} 
-.val{overflow-wrap:anywhere;color:var(--ink);word-wrap:break-word} 
-.note{color:var(--muted);margin-top:6px;word-wrap:break-word}
-
-/* Footer */
-.app-footer{text-align:center;color:#8b7f6a;padding:16px}
+/* Footer & Modal */
+.footer{text-align:center;color:#8b7f6a;padding:16px;line-height:1.6}
+.linklike {
+  background:none;border:0;padding:0 6px;color:#7a5a2f;
+  text-decoration: underline; cursor:pointer; font-size:.95em;
+}
+.sheet {
+  width:min(680px, 92vw);
+  max-height: 88vh;
+  border:0; border-radius:16px; padding:16px 20px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.25);
+}
+.sheet::backdrop { background: rgba(0,0,0,.35); }
+.sheet__bar { width:44px;height:4px;border-radius:2px;background:#d9c9ad;margin:0 auto 10px; }
+.imprint dt { font-weight:600; margin-top:10px; }
+.imprint dd { margin:2px 0 8px 0; color:#555; }
 
 /* Desktop layout (≥900px) */
 @media (min-width:900px){
-  .columns{grid-template-columns:280px 1fr 320px}
   .favorites-panel{display:block}
   .grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-  .imp-grid{grid-template-columns:260px 1fr}
-  .row{grid-template-columns:140px 1fr}
 }
 
 @media (prefers-reduced-motion:reduce){
   *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
-}
-
-/* === v17-mini.3 hard-fix === */
-@media (max-width: 480px) {
-  .columns {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 1rem;
-  }
-
-  .panel,
-  .imprint,
-  .favorites-panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    display: block !important;
-  }
-
-  /* 텍스트가 세로로 찢어지는 것 방지 */
-  .imprint, .imprint * {
-    word-break: normal !important;
-    overflow-wrap: anywhere !important;
-    white-space: normal !important;
-    writing-mode: horizontal-tb !important;
-  }
 }

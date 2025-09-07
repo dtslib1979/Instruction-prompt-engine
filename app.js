@@ -1,6 +1,19 @@
-document.addEventListener('DOMContentLoaded', ()=>{
-  // version
-  const v=document.getElementById('appVersion'); if(v) v.textContent='v17-mini.3';
+document.addEventListener('DOMContentLoaded', () => {
+  const dlg = document.getElementById('dlgImprint');
+  document.getElementById('btnImprint').addEventListener('click', () => dlg.showModal());
+  document.getElementById('btnReset').addEventListener('click', async () => {
+    try {
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.unregister()));
+      }
+      if (self.caches) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      location.href = location.pathname + '?fresh=v18';
+    } catch(e) { console.error(e); alert('Reset failed'); }
+  });
 
   // categories
   const CATS=[
@@ -139,16 +152,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
   });
 
-  // ---------- SW update banner ----------
+  // ---------- SW update handling - immediate reload ----------
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.addEventListener('message',e=>{
-      if(e.data && e.data.type==='NEW_VERSION_AVAILABLE'){
-        const m=document.getElementById('updateMount');
-        m.innerHTML=`<div class="update-banner">
-            새 버전이 준비되었습니다. <button class="u-btn" id="btnReload">새로고침</button>
-          </div>`;
-        document.getElementById('btnReload').onclick=()=>location.reload();
-      }
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      // 새 SW가 컨트롤 잡으면 새로고침(최신 UI 보장)
+      location.reload();
     });
   }
 

@@ -1,35 +1,56 @@
-// v17-mini.3: 설치 즉시 대기 제거 & 클라이언트 고지
-const CACHE='instruction-pwa-v17-mini.3';
-const CORE=['./','./index.html','./app.js','./styles.css','./manifest.webmanifest',
-  './assets/icon-192.png','./assets/icon-512.png'];
+const CACHE_STATIC = 'static-v18';
+const ASSET_ALLOW = ['.css','.js','.png','.svg','.webmanifest'];
 
-self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)));
-  self.skipWaiting(); // 새 SW 즉시 활성화
+self.addEventListener('install', e => {
+  self.skipWaiting();
+  e.waitUntil((async () => {
+    const cache = await caches.open(CACHE_STATIC);
+    // 핵심 정적 자산만 프리캐시 (버전 쿼리 포함)
+    await cache.addAll([
+      './','./index.html?v=18',
+      './styles.css?v=18','./app.js?v=18',
+      './manifest.webmanifest?v=18'
+    ]);
+  })());
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    (async ()=>{
-      const keys=await caches.keys();
-      await Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)));
-      await self.clients.claim();
-      // 새 버전 신호 브로드캐스트
-      const clientsList = await self.clients.matchAll({ includeUncontrolled: true, type: 'window' });
-      for (const client of clientsList){
-        client.postMessage({ type: 'NEW_VERSION_AVAILABLE' });
+self.addEventListener('activate', e => {
+  e.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.map(k => (k !== CACHE_STATIC) && caches.delete(k)));
+    await self.clients.claim();
+  })());
+});
+
+/* 전략: HTML은 network-first, 정적은 cache-first */
+self.addEventListener('fetch', e => {
+  const req = e.request;
+  const url = new URL(req.url);
+  const isHTML = req.destination === 'document' || url.pathname.endsWith('.html');
+
+  if (isHTML) {
+    e.respondWith((async () => {
+      try {
+        const fresh = await fetch(req, { cache:'no-store' });
+        const cache = await caches.open(CACHE_STATIC);
+        cache.put(req, fresh.clone());
+        return fresh;
+      } catch {
+        const cache = await caches.open(CACHE_STATIC);
+        return (await cache.match(req)) || cache.match('./index.html?v=18');
       }
-    })()
-  );
-});
+    })());
+    return;
+  }
 
-self.addEventListener('fetch',e=>{
-  e.respondWith(
-    caches.match(e.request).then(r=>r||fetch(e.request).then(net=>{
-      const u=new URL(e.request.url);
-      const isHTML=e.request.mode==='navigate'||u.pathname.endsWith('.html');
-      if(isHTML) caches.open(CACHE).then(c=>c.put(e.request,net.clone())).catch(()=>{});
-      return net;
-    }).catch(()=>caches.match('./index.html')))
-  );
+  if (ASSET_ALLOW.some(ext => url.pathname.endsWith(ext))) {
+    e.respondWith((async () => {
+      const cache = await caches.open(CACHE_STATIC);
+      const cached = await cache.match(req);
+      if (cached) return cached;
+      const fresh = await fetch(req);
+      cache.put(req, fresh.clone());
+      return fresh;
+    })());
+  }
 });

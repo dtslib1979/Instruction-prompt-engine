@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
   <link rel="manifest" href="manifest.webmanifest"/>
-  <link rel="stylesheet" href="styles.css?v=17mini3">
+  <link rel="stylesheet" href="./styles.css?v=18">
   <title>Instruction Prompt PWA</title>
 </head>
 <body>
@@ -29,43 +29,46 @@
   </div>
 </section>
 
-<main class="container">
-  <div class="columns">
+<main class="main">
     <!-- Categories (accordion) -->
-    <aside class="panel">
+    <aside class="panel column">
       <h3>Categories</h3>
       <div id="catAccordion" class="acc"></div>
     </aside>
 
     <!-- Prompt cards -->
-    <section class="panel">
+    <section class="panel column">
       <div id="promptGrid" class="grid"></div>
-
-      <section class="imprint" aria-labelledby="imp-title" style="margin-top:12px">
-        <h3 id="imp-title">Imprint</h3>
-        <div class="imp-grid">
-          <div class="row"><div class="key">Company</div><div class="val">dtslib</div></div>
-          <div class="row"><div class="key">Business Reg. No.</div><div class="val">475-01-03493</div></div>
-          <div class="row"><div class="key">Publisher Decl. No.</div><div class="val">2024-000013</div></div>
-          <div class="row"><div class="key">Address</div><div class="val">305, 16, Waryong-ro, Manan-gu, Anyang-si, Gyeonggi-do, Republic of Korea</div></div>
-          <div class="row"><div class="key">E-mail</div><div class="val"><a href="mailto:dimas@dtslib.com">dimas@dtslib.com</a></div></div>
-          <div class="row"><div class="key">Cookies</div><div class="val note">This site may use cookies for basic analytics.</div></div>
-        </div>
-      </section>
     </section>
 
     <!-- Favorites - only visible on desktop -->
-    <aside class="panel favorites-panel">
+    <aside class="panel favorites-panel column">
       <h3>Favorites</h3>
       <ul id="favList" class="fav-list"></ul>
     </aside>
-  </div>
 </main>
 
-<footer class="app-footer">
-  <small>© dtslib. All rights reserved. · <span id="appVersion">v17-mini.3</span></small>
+<footer class="footer">
+  <button class="linklike" id="btnImprint" aria-haspopup="dialog">Imprint</button>
+  <span>·</span>
+  <button class="linklike" id="btnReset">Reset cache</button>
+  <p>© dtslib. All rights reserved. · v18</p>
 </footer>
 
-<script src="app.js?v=17mini3" defer></script>
+<dialog id="dlgImprint" class="sheet" aria-labelledby="dlgTitle">
+  <div class="sheet__bar"></div>
+  <h3 id="dlgTitle">Imprint</h3>
+  <dl class="imprint">
+    <dt>Company</dt><dd>dtslib</dd>
+    <dt>Business Reg. No.</dt><dd>475-01-03493</dd>
+    <dt>Publisher Decl. No.</dt><dd>2024-000013</dd>
+    <dt>Address</dt><dd>305, 16, Waryong-ro, Manan-gu, Anyang-si, Gyeonggi-do, Republic of Korea</dd>
+    <dt>E-mail</dt><dd><a href="mailto:dimas@dtslib.com">dimas@dtslib.com</a></dd>
+    <dt>Cookies</dt><dd>This site may use cookies for basic analytics.</dd>
+  </dl>
+  <form method="dialog"><button class="btn">Close</button></form>
+</dialog>
+
+<script defer src="./app.js?v=18"></script>
 </body>
 </html>
