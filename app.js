@@ -1,4 +1,4 @@
-import { APP_VERSION } from './app-version.js?v=21';
+import { APP_VERSION } from './app-version.js?v=v20';
 
 const bannerId = 'update-banner';
 
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // ---------- SW update banner ----------
   if('serviceWorker' in navigator){
     navigator.serviceWorker.addEventListener('message',e=>{
-      if(e.data?.type === 'NEW_VERSION_AVAILABLE') showUpdateBanner();
+      if(e.data?.type === 'NEW_VERSION') showUpdateBanner();
     });
   }
 
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
           });
         });
         navigator.serviceWorker.addEventListener('message', (e) => {
-          if (e.data?.type === 'NEW_VERSION_AVAILABLE') showUpdateBanner();
+          if (e.data?.type === 'NEW_VERSION') showUpdateBanner();
         });
       } catch (err) {
         console.error('SW register failed', err);
@@ -177,11 +177,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
   }
 });
-
-function refreshNow(){
-  const u = new URL(location.href); u.searchParams.set('v','21');
-  location.replace(u.toString());
-}
 
 function showUpdateBanner() {
   if (document.getElementById(bannerId)) return;
@@ -194,10 +189,16 @@ function showUpdateBanner() {
     box-shadow:0 2px 8px rgba(0,0,0,.15);font-size:14px
   `;
   el.innerHTML = `
-    New version available (v21). <button onclick="refreshNow()">Refresh</button>
+    New version (${APP_VERSION}) is ready.
+    <button id="upd-refresh" style="background:#fff;border:0;border-radius:6px;padding:6px 10px;color:#0b74de;">Refresh</button>
+    <button id="upd-dismiss" style="background:transparent;border:1px solid rgba(255,255,255,.7);border-radius:6px;padding:6px 10px;color:#fff;">Later</button>
   `;
   document.body.appendChild(el);
 
-  document.getElementById('upd-refresh')?.onclick = refreshNow;
-  document.getElementById('upd-dismiss')?.onclick = () => el.remove();
+  document.getElementById('upd-refresh').onclick = async () => {
+    const reg = await navigator.serviceWorker.getRegistration();
+    reg?.waiting?.postMessage({ type: 'SKIP_WAITING' });
+    setTimeout(() => location.reload(), 150);
+  };
+  document.getElementById('upd-dismiss').onclick = () => el.remove();
 }
