@@ -1,30 +1,57 @@
-/* v24.1 레이아웃 보강 */
-:root{
+/* v24.1 layout hardening */
+
+:root { 
   --bg:#f5f2ea; --paper:#fffdfa; --ink:#141414; --muted:#6c665c;
   --line:#e8decb; --accent:#c9952e; --accent2:#a56a1d; --ok:#2aa86b; --danger:#d95c41;
   --r-lg:18px; --r-xl:24px; --shadow:0 12px 30px rgba(120,90,40,.16);
-  --space-lg: 16px;
+  --space-lg: 16px; 
 }
 
-/* 전체 넘침 방지 */
+/* Base styles */
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);
   font:15.5px/1.65 ui-sans-serif,Inter,system-ui,-apple-system,Roboto,"Segoe UI",sans-serif;
-  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-  overflow-x:hidden}
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 h1,h2,h3{margin:0} a{color:#7b4f12;text-decoration:none}
 
-/* 100vh 이슈 대응 */
+html, body { overflow-x: clip; } /* fallback to hidden on old browsers */
+
+/* 100vh issues */
 .full-height {
   min-height: 100dvh;
   min-height: 100svh;
   min-height: calc(var(--vh, 1vh) * 100);
 }
 
-/* 노치/안전영역 */
+/* safe area */
 body {
   padding-top: env(safe-area-inset-top, 0);
   padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Conservative 1-col on narrow/coarse pointers */
+@media (max-width: 900px), (pointer: coarse) and (max-width: 1024px) {
+  [data-layout-root],
+  .main-grid,
+  .layout,
+  .columns,
+  .categories-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important; /* key */
+    gap: var(--space-lg, 16px);
+    align-items: start;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .card, .col, .grid-item, .panel, .column {
+    min-width: 0 !important;            /* key: allow shrink */
+    word-break: normal !important;
+    overflow-wrap: anywhere;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  img, video { max-width: 100%; height: auto; }
 }
 
 /* Header */
