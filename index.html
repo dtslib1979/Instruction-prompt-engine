@@ -5,11 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
   <title>Instruction Prompt PWA</title>
 
-  <link rel="manifest" href="./manifest.webmanifest?v=23">
-  <link rel="stylesheet" href="./styles.css?v=23">
-  <script type="module" src="./app.js?v=23"></script>
+  <link rel="manifest" href="./manifest.webmanifest?v=24.1">
+  <link rel="stylesheet" href="./styles.css?v=24.1">
+  <script type="module" src="./app.js?v=24.1"></script>
+  <script>
+    // 기본 SW 등록
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js');
+      });
+    }
+  </script>
 </head>
-<body>
+<body data-layout-root>
 <header class="app-header">
   <div class="inner">
     <div class="brand">Instruction Prompt PWA</div>
@@ -22,7 +30,7 @@
 
   <!-- 업데이트 배너 (보이면 새로고침 유도) -->
   <div id="update-banner" class="update-banner" style="display:none;">
-    새 버전(v23)이 준비되었습니다.
+    새 버전(v24.1)이 준비되었습니다.
     <button onclick="refreshNow()">새로고침</button>
   </div>
 
@@ -55,9 +63,43 @@
   </div>
 </main>
 
-  <!-- 푸터: Imprint 링크만, 버전 표기 v23 -->
+  <!-- 푸터: Imprint 링크만, 버전 표기 v24.1 -->
   <footer class="footer">
-    <small>© dtslib · <a href="./imprint.html" rel="nofollow">Imprint</a> · <span id="appVersion">v23</span></small>
+    <small>© dtslib · <a href="./imprint.html" rel="nofollow">Imprint</a> · <span id="appVersion">v24.1</span></small>
   </footer>
+
+  <!-- 디버그 패널 (?debug=1 에서만 표시) -->
+  <script>
+  (function(){
+    const qs = new URLSearchParams(location.search);
+    if (!qs.get('debug')) return;
+
+    const el = document.createElement('div');
+    el.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;font:12px/1.4 system-ui;background:#111c;border:1px solid #333;color:#fff;padding:10px;border-radius:10px';
+    function info(){
+      const root = document.querySelector('[data-layout-root],.main-grid,.layout,.columns,.categories-row');
+      const cs = root ? getComputedStyle(root) : null;
+      el.innerHTML = `
+        <b>Debug</b> · UA: ${navigator.userAgent}<br>
+        vw:${window.innerWidth} · vh:${window.innerHeight} · DPR:${window.devicePixelRatio}<br>
+        root:${root ? root.className : '(not found)'}<br>
+        display:${cs?.display} · cols:${cs?.gridTemplateColumns}<br>
+        sw:${navigator.serviceWorker?.controller ? 'on' : 'off'} · fix:${getComputedStyle(document.documentElement).getPropertyValue('--fix-v24-1')||0}
+        <button id="_force1" style="margin-left:8px">1-Column</button>
+        <button id="_reload" style="margin-left:8px">Reload</button>
+      `;
+    }
+    info(); window.addEventListener('resize', info);
+    el.addEventListener('click', e=>{
+      if (e.target.id==='_force1') {
+        const root = document.querySelector('[data-layout-root],.main-grid,.layout,.columns,.categories-row');
+        if (root) Object.assign(root.style,{display:'grid',gridTemplateColumns:'1fr'});
+        info();
+      }
+      if (e.target.id==='_reload') location.reload(true);
+    });
+    document.body.appendChild(el);
+  })();
+  </script>
 </body>
 </html>

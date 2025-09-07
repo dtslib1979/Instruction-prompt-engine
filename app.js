@@ -1,15 +1,78 @@
-import { APP_VERSION } from './app-version.js?v=v23';
+// v24.1: 무캐시/런타임 가드/뷰포트 보정
+import { APP_VERSION } from './app-version.js?v=v24.1';
 
 const bannerId = 'update-banner';
 
-// v23: Chrome-Android 식별 클래스
-const isChromeAndroid = /Android/i.test(navigator.userAgent) && /Chrome\/\d+/.test(navigator.userAgent);
-if (isChromeAndroid) {
+// 1) 쿼리 파라미터
+const qs = new URLSearchParams(location.search);
+
+// 2) 강제 무캐시: 페이지 진입 시 브라우저 캐시/서비스워커 캐시 제거 시도
+if (qs.has('nuke')) {
+  if ('caches' in window) {
+    caches.keys().then(ns => ns.forEach(n => caches.delete(n)));
+  }
+  if (navigator.serviceWorker?.controller) {
+    navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+    navigator.serviceWorker.controller.postMessage({ type: 'NUKE_CACHES' });
+  }
+}
+
+// 3) 100vh 보정(구형 폴백)
+function setVH() {
+  document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+}
+window.addEventListener('resize', setVH, { passive: true });
+setVH();
+
+// 4) Chrome Android 런타임 1열 가드
+function isChromeAndroid() {
+  // UA-CH 우선
+  const ch = navigator.userAgentData;
+  if (ch && Array.isArray(ch.brands)) {
+    const isChromeBrand = ch.brands.some(b => /Chrom(e|ium)/.test(b.brand));
+    return isChromeBrand && ch.mobile === true;
+  }
+  // UA 폴백
+  const ua = navigator.userAgent;
+  return /Android/.test(ua) && /Chrome\/\d+/.test(ua) && !/Edg\//.test(ua);
+}
+
+function isNarrow() {
+  return Math.min(window.innerWidth, screen.width) <= 900;
+}
+
+function applyOneColumn() {
+  const root = document.querySelector('[data-layout-root],.main-grid,.layout,.columns,.categories-row');
+  if (!root) return;
+  const st = root.style;
+  st.display = 'grid';
+  st.gridTemplateColumns = '1fr';
+  st.gap = '16px';
+  document.documentElement.style.setProperty('--fix-v24-1', '1'); // 디버그 플래그
+}
+
+function forceMobileOneCol() {
+  if ((isChromeAndroid() && isNarrow()) || qs.has('force1')) {
+    applyOneColumn();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', forceMobileOneCol);
+
+// resize 디바운스/RAF
+let rafId = 0;
+window.addEventListener('resize', () => {
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(forceMobileOneCol);
+}, { passive: true });
+
+// v23: Chrome-Android 식별 클래스 (기존 호환성 유지)
+if (isChromeAndroid()) {
   document.documentElement.classList.add('is-chrome-android');
   // Chrome-Android 전용 CSS 동적 주입
   const link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = './css/chrome-mobile-v23.css?v=23';
+  link.href = './css/chrome-mobile-v23.css?v=24.1';
   document.head.appendChild(link);
 }
 
@@ -170,7 +233,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if('serviceWorker' in navigator){
     window.addEventListener('load', async () => {
       try {
-        await navigator.serviceWorker.register('./sw.js?v=23', { scope: './' });
+        await navigator.serviceWorker.register('./sw.js?v=24.1', { scope: './' });
         navigator.serviceWorker.addEventListener('message', (e) => {
           if (e.data?.type === 'NEW_VERSION') {
             document.getElementById('update-banner')?.classList.add('show');
@@ -211,7 +274,7 @@ function showUpdateBanner() {
 function refreshNow() {
   navigator.serviceWorker?.controller?.postMessage({ type: 'SKIP_WAITING' });
   const u = new URL(location.href);
-  u.searchParams.set('v', '23');
+  u.searchParams.set('v', '24.1');
   location.replace(u.toString());
 }
 

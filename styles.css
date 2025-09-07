@@ -1,15 +1,31 @@
-/* v17-mini.2 — Mobile 1-column layout with fixes */
+/* v24.1 레이아웃 보강 */
 :root{
   --bg:#f5f2ea; --paper:#fffdfa; --ink:#141414; --muted:#6c665c;
   --line:#e8decb; --accent:#c9952e; --accent2:#a56a1d; --ok:#2aa86b; --danger:#d95c41;
   --r-lg:18px; --r-xl:24px; --shadow:0 12px 30px rgba(120,90,40,.16);
+  --space-lg: 16px;
 }
+
+/* 전체 넘침 방지 */
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);
   font:15.5px/1.65 ui-sans-serif,Inter,system-ui,-apple-system,Roboto,"Segoe UI",sans-serif;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
   overflow-x:hidden}
 h1,h2,h3{margin:0} a{color:#7b4f12;text-decoration:none}
+
+/* 100vh 이슈 대응 */
+.full-height {
+  min-height: 100dvh;
+  min-height: 100svh;
+  min-height: calc(var(--vh, 1vh) * 100);
+}
+
+/* 노치/안전영역 */
+body {
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
 
 /* Header */
 .app-header{position:sticky;top:0;z-index:60;background:rgba(245,242,234,.92);
@@ -156,7 +172,35 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   max-width: 100%;
 }
 
-/* 모바일 1열 고정 */
+/* 모바일/좁은 폭에서 보수적으로 1열로 강제 */
+@media (max-width: 900px), (pointer: coarse) and (max-width: 1024px) {
+  [data-layout-root],
+  .main-grid,
+  .layout,
+  .columns,
+  .categories-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: var(--space-lg, 16px);
+    align-items: start;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .card, .col, .grid-item, .panel, .column {
+    min-width: 0 !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* 기존 모바일 1열 고정 (호환성) */
 @media (max-width: 480px) {
   .main-grid, .grid, .categories { grid-template-columns: 1fr !important; }
 }
